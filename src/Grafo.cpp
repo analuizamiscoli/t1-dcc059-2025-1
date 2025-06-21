@@ -86,9 +86,6 @@ void Grafo::carregarGrafo(string nome_arquivo) {
     arquivo.close();
 }
 
-#include <fstream>
-#include <iomanip>
-
 //Função para imprimir o grafo na tela
 void Grafo::imprimirGrafo() {
     cout<<"==========ESTRUTURA DO GRAFO=========="<<endl;
