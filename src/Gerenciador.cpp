@@ -17,6 +17,7 @@ void Gerenciador::imprimirResultadoDFS(Grafo* arvore) {
 }
 
 void Gerenciador::comandos(Grafo* grafo) {
+    
     cout<<"Digite uma das opcoes abaixo e pressione enter:"<<endl<<endl;
     cout<<"(a) Fecho transitivo direto de um no;"<<endl;
     cout<<"(b) Fecho transitivo indireto de um no;"<<endl;
@@ -167,7 +168,7 @@ void Gerenciador::comandos(Grafo* grafo) {
         }
     }
 
-    //comandos(grafo);
+    comandos(grafo);
 }
 
 char Gerenciador::get_id_entrada() {

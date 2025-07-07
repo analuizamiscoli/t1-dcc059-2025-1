@@ -4,7 +4,7 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
-
+#include <limits>
 #include "Grafo.h"
 #include "No.h"
 #include "Aresta.h"
@@ -433,7 +433,7 @@ vector<char> Grafo::fecho_transitivo_indireto(char id_no) {
 
 vector<char> Grafo::caminho_minimo_dijkstra(char id_no_a, char id_no_b) {
     vector<char> caminho_minimo;
-    const int INT_MAX = 2147483647; // Valor máximo para inteiros
+    // Use INT_MAX from <climits>
 
     // Verifica se os nós existem
     No* no_a = getNo(id_no_a);
@@ -791,4 +791,9 @@ vector<char> Grafo::periferia() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
 
+}
+
+vector<char> Grafo::vertices_de_articulacao() {
+    cout<<"Metodo nao implementado"<<endl;
+    return {};
 }
