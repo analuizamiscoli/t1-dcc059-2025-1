@@ -938,7 +938,6 @@ vector<char> Grafo::centro() {
 }
 
 vector<char> Grafo::periferia() {
-<<<<<<< HEAD
     vector<int> excentricidades = excentricidade();
     vector<char> periferias;
     int Diametro = diametro();
@@ -949,11 +948,9 @@ vector<char> Grafo::periferia() {
     }
     return periferias;
 }
-<<<<<<< HEAD
 
 vector<char> Grafo::vertices_de_articulacao() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
 }
-=======
->>>>>>> felipe
+
