@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 1 0 0
 10
 b
@@ -18,4 +19,26 @@ b f
 d c
 h j
 c g
+=======
+1 0 0
+10
+b
+i
+a
+j
+g
+c
+e
+d
+f
+h
+b h
+f a
+a i
+h e
+b f
+d c
+h j
+c g
+>>>>>>> felipe
 h d

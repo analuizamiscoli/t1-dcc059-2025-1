@@ -50,7 +50,8 @@ public:
     bool in_ponderado_aresta;
     bool in_ponderado_vertice;
     vector<No*> lista_adj;
-    vector<pair<char, char>> arestas_de_retorno;
+    //vector<pair<char, char>> arestas_de_retorno;
+    vector<pair<char, char>> arestas_da_arvore_dfs; // Arestas da árvore de DFS
 
     private:
     No* getNo(char id);
@@ -58,8 +59,8 @@ public:
     void dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado);
     void dfs_arvore(No* u, 
                     map<char, int>& cores, 
-                    vector<pair<char, char>>& arestas_arvore, 
-                    vector<pair<char, char>>& arestas_retorno);
+                    vector<pair<char, char>>& arestas_arvore);
+                   // vector<pair<char, char>>& arestas_retorno
 };
 
 #endif //GRAFO_H

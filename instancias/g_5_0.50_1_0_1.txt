@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 1 0 0
 5
 c
@@ -9,4 +10,17 @@ c b
 b d
 c d
 c a
+=======
+1 0 0
+5
+c
+e
+a
+b
+d
+c b
+b d
+c d
+c a
+>>>>>>> felipe
 d e

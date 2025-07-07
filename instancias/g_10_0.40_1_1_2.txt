@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 1 1 0
 10
 j
@@ -27,4 +28,35 @@ a h 47
 d c 24
 b e 49
 a e 8
+=======
+1 1 0
+10
+j
+i
+h
+f
+c
+d
+a
+e
+g
+b
+b g 48
+h c 36
+j b 6
+e h 7
+b d 30
+f i 31
+g a 45
+a f 32
+f e 21
+d g 12
+d e 17
+g b 44
+b a 7
+a h 47
+d c 24
+b e 49
+a e 8
+>>>>>>> felipe
 a d 30
