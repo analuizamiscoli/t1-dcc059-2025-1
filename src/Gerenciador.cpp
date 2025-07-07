@@ -117,6 +117,14 @@ void Gerenciador::comandos(Grafo *grafo)
         cout << "Digite o tamanho do subconjunto: ";
         cin >> tam;
 
+        if (cin.fail()) 
+        {
+            cout << "Entrada inválida!" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+
         if (tam > 0 && tam <= grafo->ordem)
         {
 
@@ -141,6 +149,7 @@ void Gerenciador::comandos(Grafo *grafo)
             cout << "Valor invalido" << endl;
             break;
         }
+        break;
     }
 
     case 'f':
@@ -149,6 +158,13 @@ void Gerenciador::comandos(Grafo *grafo)
         int tam;
         cout << "Digite o tamanho do subconjunto: ";
         cin >> tam;
+
+        if (cin.fail()) {
+            cout << "Entrada inválida!" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
 
         if (tam > 0 && tam <= grafo->ordem)
         {
