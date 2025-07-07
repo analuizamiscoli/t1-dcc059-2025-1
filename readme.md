@@ -57,7 +57,7 @@ Para executar o programa:
 
 **Exemplo:**
 ```bash
-./execGrupo18 grafo_teste.txt
+./execGrupo18 instancias/grafo_teste.txt
 ```
 
 ---
