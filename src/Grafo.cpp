@@ -4,7 +4,7 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
-#include <limits>
+
 #include "Grafo.h"
 #include "No.h"
 #include "Aresta.h"
@@ -381,14 +381,137 @@ vector<char> Grafo::fecho_transitivo_direto(char id_no) {
     return fecho;
 }
 
+void Grafo::dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado) {
+    if (encontrado) return;  // Já encontrou, não precisa continuar
+
+    visitados[no_atual->id] = true;
+
+    if (no_atual->id == id_destino) {
+        encontrado = true;
+        return;
+    }
+
+    for (Aresta* aresta : no_atual->arestas) {
+        char id_vizinho = aresta->id_no_alvo;
+
+        if (!visitados[id_vizinho]) {
+            No* proximo_no = getNo(id_vizinho);
+
+            if (proximo_no != nullptr) {
+                dfs_fecho_indireto(proximo_no, id_destino, visitados, encontrado);
+            }
+        }
+    }
+}
+
 vector<char> Grafo::fecho_transitivo_indireto(char id_no) {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+    vector<char> fecho_indireto;
+
+    if (getNo(id_no) == nullptr) {
+        cout << "Erro: vertice de destino '" << id_no << "' nao encontrado." << endl;
+        return fecho_indireto;
+    }
+
+    for (No* no : lista_adj) {
+        if (no->id == id_no) continue;
+
+        map<char, bool> visitados;
+        for (No* n : lista_adj) {
+            visitados[n->id] = false;
+        }
+
+        bool encontrado = false;
+        dfs_fecho_indireto(no, id_no, visitados, encontrado);
+
+        if (encontrado) {
+            fecho_indireto.push_back(no->id);
+        }
+    }
+
+    return fecho_indireto;
 }
 
 vector<char> Grafo::caminho_minimo_dijkstra(char id_no_a, char id_no_b) {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+    vector<char> caminho_minimo;
+    const int INT_MAX = 2147483647; // Valor máximo para inteiros
+
+    // Verifica se os nós existem
+    No* no_a = getNo(id_no_a);
+    No* no_b = getNo(id_no_b);
+
+    if (no_a == nullptr || no_b == nullptr) {
+        cout << "Erro: um ou ambos os vertices nao existem." << endl;
+        return caminho_minimo;
+    }
+
+    map<char, int> distancias;
+    map<char, char> anteriores;
+    map<char, bool> visitados;
+
+    // Inicializa as estruturas
+    for (No* no : lista_adj) {
+        distancias[no->id] = INT_MAX;
+        anteriores[no->id] = '\0';
+        visitados[no->id] = false;
+    }
+
+    distancias[id_no_a] = 0;
+
+    while (true) {
+        char no_nao_visitado_mais_proximo = '\0';
+        int menor_distancia = INT_MAX;
+
+        for (const auto& par : distancias) {
+            if (!visitados[par.first] && par.second < menor_distancia) {
+                menor_distancia = par.second;
+                no_nao_visitado_mais_proximo = par.first;
+            }
+        }
+
+        if (no_nao_visitado_mais_proximo == '\0' || no_nao_visitado_mais_proximo == id_no_b) {
+            break;
+        }
+
+        visitados[no_nao_visitado_mais_proximo] = true;
+
+        No* no_atual = getNo(no_nao_visitado_mais_proximo);
+        if (no_atual == nullptr) continue;
+
+        for (Aresta* aresta : no_atual->arestas) {
+            char id_vizinho = aresta->id_no_alvo;
+            int peso = aresta->peso;
+
+            if (!visitados[id_vizinho] && distancias[no_nao_visitado_mais_proximo] != INT_MAX) {
+                int nova_distancia = distancias[no_nao_visitado_mais_proximo] + peso;
+                if (nova_distancia < distancias[id_vizinho]) {
+                    distancias[id_vizinho] = nova_distancia;
+                    anteriores[id_vizinho] = no_nao_visitado_mais_proximo;
+                }
+            }
+        }
+    }
+
+    if (distancias[id_no_b] == INT_MAX) {
+        cout << "Nao existe caminho entre " << id_no_a << " e " << id_no_b << "." << endl;
+        return caminho_minimo;
+    }
+
+    // Reconstrói o caminho de trás pra frente
+    for (char v = id_no_b; v != '\0'; v = anteriores[v]) {
+        caminho_minimo.push_back(v);
+        if (v == id_no_a) break;
+    }
+
+    reverse(caminho_minimo.begin(), caminho_minimo.end());
+
+    // Mostra o caminho e o custo
+    cout << "Caminho minimo de " << id_no_a << " para " << id_no_b << ": ";
+    for (char v : caminho_minimo) {
+        cout << v << " ";
+    }
+    cout << "\nCusto total: " << distancias[id_no_b] << endl;
+
+    return caminho_minimo;
 }
 
 vector<char> Grafo::caminho_minimo_floyd(char id_no, char id_no_b) {
@@ -667,4 +790,5 @@ vector<char> Grafo::centro() {
 vector<char> Grafo::periferia() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
+
 }

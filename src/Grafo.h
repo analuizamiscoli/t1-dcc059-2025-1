@@ -52,6 +52,7 @@ public:
     private:
     No* getNo(char id);
     void dfs_fecho_direto(No* no_atual, map<char, bool>& visitados, vector<char>& fecho);
+    void dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado);
     void dfs_arvore(No* u, 
                     map<char, int>& cores, 
                     vector<pair<char, char>>& arestas_arvore, 
