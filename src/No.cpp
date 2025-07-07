@@ -1,7 +1,7 @@
 #include "No.h"
 
 No::No() {
-    this->peso = 0;
+    this->peso = peso;
 }
 
 No::~No() {

@@ -7,7 +7,7 @@ Aresta::Aresta() {
 
 Aresta::Aresta(char id_no_alvo, int peso) {
     this->id_no_alvo = id_no_alvo;
-    this->peso = 0;
+    this->peso = peso;
 }
 
 Aresta::~Aresta() {

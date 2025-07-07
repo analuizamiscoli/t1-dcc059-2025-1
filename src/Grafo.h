@@ -33,7 +33,6 @@ public:
     int diametro(); // h 2
     vector<char> centro(); // h 3
     vector<char> periferia(); // h 4
-    vector<char> vertices_de_articulacao(); // i
 
     // Funções para imprimir e salvar os resultados
     void imprimirVetorVertices(vector<char> vertices, string titulo);

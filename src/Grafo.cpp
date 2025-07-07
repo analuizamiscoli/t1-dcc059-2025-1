@@ -4,9 +4,12 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
+
 #include "Grafo.h"
 #include "No.h"
 #include "Aresta.h"
+#include <climits>
+
 
 using namespace std;
 
@@ -516,15 +519,190 @@ vector<char> Grafo::caminho_minimo_floyd(char id_no, char id_no_b) {
     return {};
 }
 
-Grafo * Grafo::arvore_geradora_minima_prim(vector<char> ids_nos) {
-    cout<<"Metodo nao implementado"<<endl;
-    return nullptr;
+Grafo* Grafo::arvore_geradora_minima_prim(vector<char> ids_nos) {
+    cout << "Implementando metodo AGM PRIM" << endl;
+    if (!in_ponderado_aresta) {
+        cout << "Erro: Grafo nao ponderado por arestas." << endl;
+        return nullptr;
+    }
+
+    int n = ids_nos.size();
+    if (n == 0) {
+        cout << "Subconjunto de nos vazio." << endl;
+        return nullptr;
+    }
+    
+    map<char, int> id_para_indice;
+    for(int i = 0; i < n; ++i) {
+        id_para_indice[ids_nos[i]] = i;
+    }
+
+    vector<vector<int>> matriz_adj(n, vector<int>(n, INT_MAX));
+    for (int i = 0; i < n; ++i) {
+        No* no_origem = getNo(ids_nos[i]);
+        if (!no_origem) continue;
+
+        for (Aresta* aresta : no_origem->arestas) {
+            if (id_para_indice.count(aresta->id_no_alvo)) { 
+                int j = id_para_indice[aresta->id_no_alvo];
+                matriz_adj[i][j] = aresta->peso;
+            }
+        }
+    }
+
+    vector<int> chave(n, INT_MAX);       
+    vector<int> pai(n, -1);              
+    vector<bool> na_agm(n, false);       
+    
+    chave[0] = 0;
+
+    for (int count = 0; count < n; ++count) {
+        
+        int min_chave = INT_MAX;
+        int u = -1;
+
+        for (int v_idx = 0; v_idx < n; ++v_idx) {
+            if (!na_agm[v_idx] && chave[v_idx] < min_chave) {
+                min_chave = chave[v_idx];
+                u = v_idx;
+            }
+        }
+        
+    
+        if (u == -1) break; 
+        
+        na_agm[u] = true; 
+
+        
+        for (int v_idx = 0; v_idx < n; ++v_idx) {
+            if (matriz_adj[u][v_idx] != INT_MAX && !na_agm[v_idx] && matriz_adj[u][v_idx] < chave[v_idx]) {
+                pai[v_idx] = u;
+                chave[v_idx] = matriz_adj[u][v_idx];
+            }
+        }
+    }
+
+   
+    Grafo* agm = new Grafo();
+    agm->in_direcionado = false;
+    agm->in_ponderado_aresta = true;
+    agm->ordem = n;
+
+    for (char id : ids_nos) {
+        No* novo = new No();
+        novo->id = id;
+        agm->lista_adj.push_back(novo);
+    }
+
+    int custo_total = 0;
+    for (int i = 1; i < n; ++i) {
+        if (pai[i] != -1) {
+            char id_u = ids_nos[pai[i]];
+            char id_v = ids_nos[i];
+            int peso = matriz_adj[i][pai[i]];
+            
+            agm->getNo(id_u)->arestas.push_back(new Aresta(id_v, peso));
+            agm->getNo(id_v)->arestas.push_back(new Aresta(id_u, peso));
+            custo_total += peso;
+        }
+    }
+    
+    cout << "Custo total da AGM: " << custo_total << endl;
+    
+    return agm;
 }
 
+
+
 Grafo * Grafo::arvore_geradora_minima_kruskal(vector<char> ids_nos) {
-    cout<<"Metodo nao implementado"<<endl;
-    return nullptr;
+    cout<<"Implementando metodo de AGM KRUSKAL"<<endl;
+
+    if (!in_ponderado_aresta) {
+        cout << "Erro: Grafo nao ponderado por arestas." << endl;
+        return nullptr;
+    }
+
+    int n = ids_nos.size();
+
+    struct ArestaK {
+        int u, v, peso;
+    };
+
+    vector<ArestaK> L;
+
+    // montar lista de arestas (somente em X)
+    for (int i = 0; i < n; ++i) {
+        No* no_u = getNo(ids_nos[i]);
+        for (Aresta* a : no_u->arestas) {
+            for (int j = 0; j < n; ++j) {
+                if (ids_nos[j] == a->id_no_alvo) {
+                    if (i < j) {
+                        L.push_back({i, j, a->peso});
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    sort(L.begin(), L.end(), [](const ArestaK& a, const ArestaK& b) {
+        return a.peso < b.peso;
+    });
+
+    vector<int> pai(n), rank(n, 0);
+    for (int i = 0; i < n; ++i) pai[i] = i;
+
+    auto find = [&](int u) {
+        while (pai[u] != u) {
+            pai[u] = pai[pai[u]];
+            u = pai[u];
+        }
+        return u;
+    };
+
+    auto unir = [&](int u, int v) {
+        u = find(u);
+        v = find(v);
+        if (u == v) return false;
+
+        if (rank[u] < rank[v]) pai[u] = v;
+        else if (rank[u] > rank[v]) pai[v] = u;
+        else {
+            pai[v] = u;
+            rank[u]++;
+        }
+        return true;
+    };
+
+    Grafo* AGM = new Grafo();
+    AGM->in_direcionado = false;
+    AGM->in_ponderado_aresta = true;
+
+    for (char id : ids_nos) {
+        No* novo = new No();
+        novo->id = id;
+        AGM->lista_adj.push_back(novo);
+    }
+    AGM->ordem = n;
+
+    int arestas_aceitas = 0;
+
+    for (auto& e : L) {
+        if (unir(e.u, e.v)) {
+            AGM->getNo(ids_nos[e.u])->arestas.push_back(new Aresta(ids_nos[e.v], e.peso));
+            AGM->getNo(ids_nos[e.v])->arestas.push_back(new Aresta(ids_nos[e.u], e.peso));
+            arestas_aceitas++;
+            if (arestas_aceitas == n-1) break;
+        }
+    }
+
+    if (arestas_aceitas != n-1) {
+        cout << "Subgrafo desconexo — AGM incompleta." << endl;
+    }
+
+    return AGM;
 }
+
 
 void Grafo::dfs_arvore(No* u, 
                        map<char, int>& cores, 
@@ -612,9 +790,5 @@ vector<char> Grafo::centro() {
 vector<char> Grafo::periferia() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
-}
 
-vector<char> Grafo::vertices_de_articulacao() {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
 }
