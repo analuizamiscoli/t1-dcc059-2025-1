@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-# Trabalho 1
-**Universidade Federal de Juiz de Fora**
-**Departamento de Ciência da Computação**
-**DCC059 – Teoria dos Grafos – Turma A**
-**Semestre 2025/1 - Profa Luciana Brugiolo - Tutor Rafael Freesz**
-=======
 # DCC059 - Teoria dos Grafos - Turma A
 ## Trabalho Prático 1
 
@@ -126,4 +119,3 @@ Para dúvidas, entre em contato com qualquer um dos membros do grupo através do
 - **Tutor**: Rafael Freesz
 - **Semestre**: 2025/1
 - **Data de Entrega**: 07/07/2025
->>>>>>> felipe
