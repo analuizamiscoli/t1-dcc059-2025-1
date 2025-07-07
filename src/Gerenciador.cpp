@@ -111,8 +111,9 @@ void Gerenciador::comandos(Grafo* grafo) {
             }
             } else {
                 cout<<"Valor invalido"<<endl;
+                break;
             }
-            break;
+            
         }
 
         case 'f': {
@@ -155,17 +156,18 @@ void Gerenciador::comandos(Grafo* grafo) {
             break;
         }
 
-        case 'h': {
+        case 'h': { }
 
         case '0': {
             exit(0);
         }
         default: {
             cout<<"Opção inválida"<<endl;
+            break;
         }
     }
 
-    comandos(grafo);
+    //comandos(grafo);
 }
 
 char Gerenciador::get_id_entrada() {
