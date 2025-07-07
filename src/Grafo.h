@@ -8,6 +8,8 @@
 #include "No.h"
 #include <iostream>
 #include <vector>
+#include <map>
+#include <set>
 
 using namespace std;
 
@@ -19,7 +21,8 @@ public:
     void carregarGrafo(string nome_arquivo);
     void imprimirGrafo();
     void salvarGrafo(string nome_arquivo);
-
+    
+    vector<char> vertices_de_articulacao();
     vector<char> fecho_transitivo_direto(char id_no); // a
     vector<char> fecho_transitivo_indireto(char id_no); // b
     vector<char> caminho_minimo_dijkstra(char id_no_a, char id_no_b); // c
@@ -33,7 +36,6 @@ public:
     int diametro(); // h 2
     vector<char> centro(); // h 3
     vector<char> periferia(); // h 4
-    vector<char> vertices_de_articulacao(); // i
 
     // Funções para imprimir e salvar os resultados
     void imprimirVetorVertices(vector<char> vertices, string titulo);
@@ -48,8 +50,16 @@ public:
     bool in_ponderado_aresta;
     bool in_ponderado_vertice;
     vector<No*> lista_adj;
+    vector<pair<char, char>> arestas_de_retorno;
+
+    private:
+    No* getNo(char id);
+    void dfs_fecho_direto(No* no_atual, map<char, bool>& visitados, vector<char>& fecho);
+    void dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado);
+    void dfs_arvore(No* u, 
+                    map<char, int>& cores, 
+                    vector<pair<char, char>>& arestas_arvore, 
+                    vector<pair<char, char>>& arestas_retorno);
 };
-
-
 
 #endif //GRAFO_H

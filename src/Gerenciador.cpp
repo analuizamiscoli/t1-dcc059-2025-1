@@ -2,7 +2,22 @@
 #include <fstream>
 
 
+void Gerenciador::imprimirResultadoDFS(Grafo* arvore) {
+    cout << "ARVORE DE CAMINHAMENTO EM PROFUNDIDADE" << endl;
+    arvore->imprimirGrafo(); // imprime a estrutura principal da árvore usando a função genérica 
+    cout << "ARESTAS DE RETORNO (CICLOS):" << endl; // adiciona as arestas de retorno
+    if (arvore->arestas_de_retorno.empty()) {
+        cout << "Nenhuma" << endl;
+    } else {
+        for (const auto& aresta : arvore->arestas_de_retorno) {
+            cout << "  " << aresta.first << " -> " << aresta.second << endl;
+        }
+    }
+    cout << "=========================================" << endl << endl;
+}
+
 void Gerenciador::comandos(Grafo* grafo) {
+    
     cout<<"Digite uma das opcoes abaixo e pressione enter:"<<endl<<endl;
     cout<<"(a) Fecho transitivo direto de um no;"<<endl;
     cout<<"(b) Fecho transitivo indireto de um no;"<<endl;
@@ -97,8 +112,9 @@ void Gerenciador::comandos(Grafo* grafo) {
             }
             } else {
                 cout<<"Valor invalido"<<endl;
+                break;
             }
-            break;
+            
         }
 
         case 'f': {
@@ -132,9 +148,7 @@ void Gerenciador::comandos(Grafo* grafo) {
             Grafo* arvore_caminhamento_profundidade = grafo->arvore_caminhamento_profundidade(id_no);
 
             if(arvore_caminhamento_profundidade != nullptr) {
-                cout << "ARVORE DE CAMINHAMENTO EM PROFUNDIDADE" << endl;
-                arvore_caminhamento_profundidade->imprimirGrafo();
-            
+                Gerenciador::imprimirResultadoDFS(arvore_caminhamento_profundidade);
                 if(pergunta_imprimir_arquivo("arvore_caminhamento_profundidade.txt")) {
                     arvore_caminhamento_profundidade->salvarGrafo("arvore_caminhamento_profundidade.txt");
                 }
@@ -143,37 +157,14 @@ void Gerenciador::comandos(Grafo* grafo) {
             break;
         }
 
-        case 'h': {
-            int raio_grafo = grafo->raio();
-            int diametro_grafo = grafo->diametro();
-            vector<char> centro_grafo = grafo->centro();
-            vector<char> periferia_grafo = grafo->periferia();
-            grafo->imprimirPropriedades(raio_grafo, diametro_grafo, centro_grafo, periferia_grafo);
-
-            if(pergunta_imprimir_arquivo("propriedades_grafo.txt")) {
-                grafo->salvarPropriedades(raio_grafo, diametro_grafo, centro_grafo, periferia_grafo, "propriedades_grafo.txt");
-
-            }
-            break;
-        }
-
-        // case 'i': {
-
-        //     vector<char> articulacao = grafo->vertices_de_articulacao();
-        //     cout<<"Metodo de impressao em tela nao implementado"<<endl<<endl;
-
-        //     if(pergunta_imprimir_arquivo("arvore_caminhamento_profundidade.txt")) {
-        //         cout<<"Metodo de impressao em arquivo nao implementado"<<endl;
-        //     }
-
-        //     break;
-        // }
+        case 'h': { }
 
         case '0': {
             exit(0);
         }
         default: {
             cout<<"Opção inválida"<<endl;
+            break;
         }
     }
 
