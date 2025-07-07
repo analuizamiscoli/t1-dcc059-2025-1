@@ -3,16 +3,18 @@
 
 
 void Gerenciador::imprimirResultadoDFS(Grafo* arvore) {
-    cout << "ARVORE DE CAMINHAMENTO EM PROFUNDIDADE" << endl;
+    cout << "========== ARVORE DE CAMINHAMENTO EM PROFUNDIDADE ==========" << endl;
     arvore->imprimirGrafo(); // imprime a estrutura principal da árvore usando a função genérica 
-    cout << "ARESTAS DE RETORNO (CICLOS):" << endl; // adiciona as arestas de retorno
-    if (arvore->arestas_de_retorno.empty()) {
-        cout << "Nenhuma" << endl;
+
+    cout << "========== ARESTAS DA ARVORE ==========" << endl;
+    if (arvore->arestas_da_arvore_dfs.empty()) {
+        cout << "Nenhuma aresta encontrada." << endl;
     } else {
-        for (const auto& aresta : arvore->arestas_de_retorno) {
-            cout << "  " << aresta.first << " -> " << aresta.second << endl;
+        for (const auto& aresta : arvore->arestas_da_arvore_dfs) {
+            cout << "Aresta: " << aresta.first << " -> " << aresta.second << endl;
         }
     }
+
     cout << "=========================================" << endl << endl;
 }
 

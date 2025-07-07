@@ -89,7 +89,7 @@ void Grafo::carregarGrafo(string nome_arquivo) {
 
 //Função para imprimir o grafo na tela
 void Grafo::imprimirGrafo() {
-    cout<<"==========ESTRUTURA DO GRAFO=========="<<endl;
+    cout<<"\n==========ESTRUTURA DO GRAFO=========="<<endl;
     cout<<"Ordem: "<<this->ordem<< " vertices"<<endl;
     cout<<"Tipo: "<< (this->in_direcionado ? "Direcionado" : "Nao direcionado") <<endl;
     cout<<"Ponderado (vertices): "<<(this->in_ponderado_vertice ? "Sim" : "Nao") <<endl;
@@ -404,8 +404,7 @@ Grafo * Grafo::arvore_geradora_minima_kruskal(vector<char> ids_nos) {
 
 void Grafo::dfs_arvore(No* u, 
                        map<char, int>& cores, 
-                       vector<pair<char, char>>& arestas_arvore, 
-                       vector<pair<char, char>>& arestas_retorno) {
+                       vector<pair<char, char>>& arestas_arvore) {
 
     cores[u->id] = 1; 
 
@@ -416,10 +415,7 @@ void Grafo::dfs_arvore(No* u,
 
         if (cores[v_id] == 0) {
             arestas_arvore.push_back({u->id, v_id}); 
-            dfs_arvore(v, cores, arestas_arvore, arestas_retorno); 
-        }
-        else if (cores[v_id] == 1) {
-            arestas_retorno.push_back({u->id, v_id}); 
+            dfs_arvore(v, cores, arestas_arvore); 
         }
     }
     cores[u->id] = 2; 
@@ -438,9 +434,8 @@ Grafo* Grafo::arvore_caminhamento_profundidade(char id_no) {
     }
     
     vector<pair<char, char>> arestas_arvore;
-    vector<pair<char, char>> arestas_retorno;
     
-    dfs_arvore(no_inicial, cores, arestas_arvore, arestas_retorno);
+    dfs_arvore(no_inicial, cores, arestas_arvore);
     
     Grafo* arvore = new Grafo(); 
     arvore->in_direcionado = true; 
@@ -465,7 +460,7 @@ Grafo* Grafo::arvore_caminhamento_profundidade(char id_no) {
             origem->arestas.push_back(new Aresta(par_aresta.second, 0));
         }
     }
-    arvore->arestas_de_retorno = arestas_retorno;
+    arvore->arestas_da_arvore_dfs = arestas_arvore;
     
     return arvore;
 }
@@ -486,11 +481,6 @@ vector<char> Grafo::centro() {
 }
 
 vector<char> Grafo::periferia() {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
-}
-
-vector<char> Grafo::vertices_de_articulacao() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
 }
