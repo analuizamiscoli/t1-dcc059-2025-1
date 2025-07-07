@@ -1,4 +1,8 @@
 #include <fstream>
+#include <vector>
+#include <limits>
+#include <algorithm>
+#include <climits>
 #include <iostream>
 #include <iomanip>
 #include <map>
@@ -8,14 +12,6 @@
 #include "Grafo.h"
 #include "No.h"
 #include "Aresta.h"
-<<<<<<< HEAD
-#include <vector>
-#include <limits>
-#include <algorithm>
-=======
-#include <climits>
-
->>>>>>> origin/main
 
 using namespace std;
 
@@ -957,11 +953,6 @@ vector<char> Grafo::periferia() {
         }
     }
     return periferias;
-=======
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
-
->>>>>>> origin/main
 }
 
 vector<char> Grafo::vertices_de_articulacao() {
