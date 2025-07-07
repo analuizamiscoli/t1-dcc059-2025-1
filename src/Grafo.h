@@ -8,6 +8,8 @@
 #include "No.h"
 #include <iostream>
 #include <vector>
+#include <map>
+#include <set>
 
 using namespace std;
 
@@ -31,7 +33,6 @@ public:
     int diametro(); // h 2
     vector<char> centro(); // h 3
     vector<char> periferia(); // h 4
-    vector<char> vertices_de_articulacao(); // i
 
     // Funções para imprimir e salvar os resultados
     void imprimirVetorVertices(vector<char> vertices, string titulo);
@@ -46,8 +47,15 @@ public:
     bool in_ponderado_aresta;
     bool in_ponderado_vertice;
     vector<No*> lista_adj;
+    vector<pair<char, char>> arestas_de_retorno;
+
+    private:
+    No* getNo(char id);
+    void dfs_fecho_direto(No* no_atual, map<char, bool>& visitados, vector<char>& fecho);
+    void dfs_arvore(No* u, 
+                    map<char, int>& cores, 
+                    vector<pair<char, char>>& arestas_arvore, 
+                    vector<pair<char, char>>& arestas_retorno);
 };
-
-
 
 #endif //GRAFO_H
