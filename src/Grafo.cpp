@@ -1,8 +1,14 @@
 #include <fstream>
+#include <vector>
+#include <limits>
+#include <algorithm>
+#include <climits>
 #include <iostream>
 #include <iomanip>
 #include <map>
 #include <sstream>
+#include <algorithm>
+#include <limits>
 #include "Grafo.h"
 #include "No.h"
 #include "Aresta.h"
@@ -377,30 +383,397 @@ vector<char> Grafo::fecho_transitivo_direto(char id_no) {
     return fecho;
 }
 
+void Grafo::dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado) {
+    if (encontrado) return;  // Já encontrou, não precisa continuar
+
+    visitados[no_atual->id] = true;
+
+    if (no_atual->id == id_destino) {
+        encontrado = true;
+        return;
+    }
+
+    for (Aresta* aresta : no_atual->arestas) {
+        char id_vizinho = aresta->id_no_alvo;
+
+        if (!visitados[id_vizinho]) {
+            No* proximo_no = getNo(id_vizinho);
+
+            if (proximo_no != nullptr) {
+                dfs_fecho_indireto(proximo_no, id_destino, visitados, encontrado);
+            }
+        }
+    }
+}
+
 vector<char> Grafo::fecho_transitivo_indireto(char id_no) {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+    vector<char> fecho_indireto;
+
+    if (getNo(id_no) == nullptr) {
+        cout << "Erro: vertice de destino '" << id_no << "' nao encontrado." << endl;
+        return fecho_indireto;
+    }
+
+    for (No* no : lista_adj) {
+        if (no->id == id_no) continue;
+
+        map<char, bool> visitados;
+        for (No* n : lista_adj) {
+            visitados[n->id] = false;
+        }
+
+        bool encontrado = false;
+        dfs_fecho_indireto(no, id_no, visitados, encontrado);
+
+        if (encontrado) {
+            fecho_indireto.push_back(no->id);
+        }
+    }
+
+    return fecho_indireto;
 }
 
 vector<char> Grafo::caminho_minimo_dijkstra(char id_no_a, char id_no_b) {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+    vector<char> caminho_minimo;
+    // Use INT_MAX from <climits>
+
+    // Verifica se os nós existem
+    No* no_a = getNo(id_no_a);
+    No* no_b = getNo(id_no_b);
+
+    if (no_a == nullptr || no_b == nullptr) {
+        cout << "Erro: um ou ambos os vertices nao existem." << endl;
+        return caminho_minimo;
+    }
+
+    map<char, int> distancias;
+    map<char, char> anteriores;
+    map<char, bool> visitados;
+
+    // Inicializa as estruturas
+    for (No* no : lista_adj) {
+        distancias[no->id] = INT_MAX;
+        anteriores[no->id] = '\0';
+        visitados[no->id] = false;
+    }
+
+    distancias[id_no_a] = 0;
+
+    while (true) {
+        char no_nao_visitado_mais_proximo = '\0';
+        int menor_distancia = INT_MAX;
+
+        for (const auto& par : distancias) {
+            if (!visitados[par.first] && par.second < menor_distancia) {
+                menor_distancia = par.second;
+                no_nao_visitado_mais_proximo = par.first;
+            }
+        }
+
+        if (no_nao_visitado_mais_proximo == '\0' || no_nao_visitado_mais_proximo == id_no_b) {
+            break;
+        }
+
+        visitados[no_nao_visitado_mais_proximo] = true;
+
+        No* no_atual = getNo(no_nao_visitado_mais_proximo);
+        if (no_atual == nullptr) continue;
+
+        for (Aresta* aresta : no_atual->arestas) {
+            char id_vizinho = aresta->id_no_alvo;
+            int peso = aresta->peso;
+
+            if (!visitados[id_vizinho] && distancias[no_nao_visitado_mais_proximo] != INT_MAX) {
+                int nova_distancia = distancias[no_nao_visitado_mais_proximo] + peso;
+                if (nova_distancia < distancias[id_vizinho]) {
+                    distancias[id_vizinho] = nova_distancia;
+                    anteriores[id_vizinho] = no_nao_visitado_mais_proximo;
+                }
+            }
+        }
+    }
+
+    if (distancias[id_no_b] == INT_MAX) {
+        cout << "Nao existe caminho entre " << id_no_a << " e " << id_no_b << "." << endl;
+        return caminho_minimo;
+    }
+
+    // Reconstrói o caminho de trás pra frente
+    for (char v = id_no_b; v != '\0'; v = anteriores[v]) {
+        caminho_minimo.push_back(v);
+        if (v == id_no_a) break;
+    }
+
+    reverse(caminho_minimo.begin(), caminho_minimo.end());
+
+    // Mostra o caminho e o custo
+    cout << "Caminho minimo de " << id_no_a << " para " << id_no_b << ": ";
+    for (char v : caminho_minimo) {
+        cout << v << " ";
+    }
+    cout << "\nCusto total: " << distancias[id_no_b] << endl;
+
+    return caminho_minimo;
 }
 
-vector<char> Grafo::caminho_minimo_floyd(char id_no, char id_no_b) {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+vector<char> Grafo::caminho_minimo_floyd(char id_no_a, char id_no_b) {
+    const int INF = 1000000000;
+    int n = this->ordem;
+
+    vector<char> vertices(n);
+    for (int i = 0; i < n; i++) {
+        vertices[i] = lista_adj[i]->id;
+    }
+
+    vector<vector<int>> dist(n, vector<int>(n, INF));
+    vector<vector<int>> next(n, vector<int>(n, -1));
+
+    for (int i = 0; i < n; i++) {
+        dist[i][i] = 0;
+        No* no = lista_adj[i];
+
+        for (Aresta* aresta : no->arestas) {
+            int j = -1;
+            for (int m = 0; m < n; m++) {
+                if (vertices[m] == aresta->id_no_alvo) {
+                    j = m;
+                    break;
+                }
+            }
+
+            if (j != -1) {
+                dist[i][j] = aresta->peso;
+                next[i][j] = j;
+
+                if (!this->in_direcionado) {
+                    dist[j][i] = aresta->peso;
+                    next[j][i] = i;
+                }
+            }
+        }
+    }
+
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] < INF && dist[k][j] < INF &&
+                    dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                    next[i][j] = next[i][k];
+                }
+            }
+        }
+    }
+
+    int u = -1;
+    int v = -1;
+    for (int i = 0; i < n; i++) {
+        if (vertices[i] == id_no_a) {
+            u = i;
+        }
+        if (vertices[i] == id_no_b) {
+            v = i;
+        }
+    }
+
+    if (u == -1 || v == -1 || next[u][v] == -1) {
+        return vector<char>(); 
+    }
+
+    vector<char> caminho;
+    caminho.push_back(vertices[u]);
+    while (u != v) {
+        u = next[u][v];
+        caminho.push_back(vertices[u]);
+    }
+
+    return caminho;
 }
 
-Grafo * Grafo::arvore_geradora_minima_prim(vector<char> ids_nos) {
-    cout<<"Metodo nao implementado"<<endl;
-    return nullptr;
+Grafo* Grafo::arvore_geradora_minima_prim(vector<char> ids_nos) {
+    cout << "Implementando metodo AGM PRIM" << endl;
+    if (!in_ponderado_aresta) {
+        cout << "Erro: Grafo nao ponderado por arestas." << endl;
+        return nullptr;
+    }
+
+    int n = ids_nos.size();
+    if (n == 0) {
+        cout << "Subconjunto de nos vazio." << endl;
+        return nullptr;
+    }
+    
+    map<char, int> id_para_indice;
+    for(int i = 0; i < n; ++i) {
+        id_para_indice[ids_nos[i]] = i;
+    }
+
+    vector<vector<int>> matriz_adj(n, vector<int>(n, INT_MAX));
+    for (int i = 0; i < n; ++i) {
+        No* no_origem = getNo(ids_nos[i]);
+        if (!no_origem) continue;
+
+        for (Aresta* aresta : no_origem->arestas) {
+            if (id_para_indice.count(aresta->id_no_alvo)) { 
+                int j = id_para_indice[aresta->id_no_alvo];
+                matriz_adj[i][j] = aresta->peso;
+            }
+        }
+    }
+
+    vector<int> chave(n, INT_MAX);       
+    vector<int> pai(n, -1);              
+    vector<bool> na_agm(n, false);       
+    
+    chave[0] = 0;
+
+    for (int count = 0; count < n; ++count) {
+        
+        int min_chave = INT_MAX;
+        int u = -1;
+
+        for (int v_idx = 0; v_idx < n; ++v_idx) {
+            if (!na_agm[v_idx] && chave[v_idx] < min_chave) {
+                min_chave = chave[v_idx];
+                u = v_idx;
+            }
+        }
+        
+    
+        if (u == -1) break; 
+        
+        na_agm[u] = true; 
+
+        
+        for (int v_idx = 0; v_idx < n; ++v_idx) {
+            if (matriz_adj[u][v_idx] != INT_MAX && !na_agm[v_idx] && matriz_adj[u][v_idx] < chave[v_idx]) {
+                pai[v_idx] = u;
+                chave[v_idx] = matriz_adj[u][v_idx];
+            }
+        }
+    }
+
+   
+    Grafo* agm = new Grafo();
+    agm->in_direcionado = false;
+    agm->in_ponderado_aresta = true;
+    agm->ordem = n;
+
+    for (char id : ids_nos) {
+        No* novo = new No();
+        novo->id = id;
+        agm->lista_adj.push_back(novo);
+    }
+
+    int custo_total = 0;
+    for (int i = 1; i < n; ++i) {
+        if (pai[i] != -1) {
+            char id_u = ids_nos[pai[i]];
+            char id_v = ids_nos[i];
+            int peso = matriz_adj[i][pai[i]];
+            
+            agm->getNo(id_u)->arestas.push_back(new Aresta(id_v, peso));
+            agm->getNo(id_v)->arestas.push_back(new Aresta(id_u, peso));
+            custo_total += peso;
+        }
+    }
+    
+    cout << "Custo total da AGM: " << custo_total << endl;
+    
+    return agm;
 }
+
+
 
 Grafo * Grafo::arvore_geradora_minima_kruskal(vector<char> ids_nos) {
-    cout<<"Metodo nao implementado"<<endl;
-    return nullptr;
+    cout<<"Implementando metodo de AGM KRUSKAL"<<endl;
+
+    if (!in_ponderado_aresta) {
+        cout << "Erro: Grafo nao ponderado por arestas." << endl;
+        return nullptr;
+    }
+
+    int n = ids_nos.size();
+
+    struct ArestaK {
+        int u, v, peso;
+    };
+
+    vector<ArestaK> L;
+
+    // montar lista de arestas (somente em X)
+    for (int i = 0; i < n; ++i) {
+        No* no_u = getNo(ids_nos[i]);
+        for (Aresta* a : no_u->arestas) {
+            for (int j = 0; j < n; ++j) {
+                if (ids_nos[j] == a->id_no_alvo) {
+                    if (i < j) {
+                        L.push_back({i, j, a->peso});
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    sort(L.begin(), L.end(), [](const ArestaK& a, const ArestaK& b) {
+        return a.peso < b.peso;
+    });
+
+    vector<int> pai(n), rank(n, 0);
+    for (int i = 0; i < n; ++i) pai[i] = i;
+
+    auto find = [&](int u) {
+        while (pai[u] != u) {
+            pai[u] = pai[pai[u]];
+            u = pai[u];
+        }
+        return u;
+    };
+
+    auto unir = [&](int u, int v) {
+        u = find(u);
+        v = find(v);
+        if (u == v) return false;
+
+        if (rank[u] < rank[v]) pai[u] = v;
+        else if (rank[u] > rank[v]) pai[v] = u;
+        else {
+            pai[v] = u;
+            rank[u]++;
+        }
+        return true;
+    };
+
+    Grafo* AGM = new Grafo();
+    AGM->in_direcionado = false;
+    AGM->in_ponderado_aresta = true;
+
+    for (char id : ids_nos) {
+        No* novo = new No();
+        novo->id = id;
+        AGM->lista_adj.push_back(novo);
+    }
+    AGM->ordem = n;
+
+    int arestas_aceitas = 0;
+
+    for (auto& e : L) {
+        if (unir(e.u, e.v)) {
+            AGM->getNo(ids_nos[e.u])->arestas.push_back(new Aresta(ids_nos[e.v], e.peso));
+            AGM->getNo(ids_nos[e.v])->arestas.push_back(new Aresta(ids_nos[e.u], e.peso));
+            arestas_aceitas++;
+            if (arestas_aceitas == n-1) break;
+        }
+    }
+
+    if (arestas_aceitas != n-1) {
+        cout << "Subgrafo desconexo — AGM incompleta." << endl;
+    }
+
+    return AGM;
 }
+
 
 void Grafo::dfs_arvore(No* u, 
                        map<char, int>& cores, 
@@ -465,22 +838,118 @@ Grafo* Grafo::arvore_caminhamento_profundidade(char id_no) {
     return arvore;
 }
 
+vector<vector<int>> Grafo::calcular_matriz_distancias() {
+    int n = this->ordem;
+    const int INF = 1000000000;
+    int peso = 0;
+    
+    vector<char> vertices(n);
+    for (int i = 0; i < n; i++) {
+        vertices[i] = lista_adj[i]->id;
+    }
+
+    vector<vector<int>> dist(n, vector<int>(n, INF));
+    for (int i = 0; i < n; i++) {
+        dist[i][i] = 0;
+        No* no = lista_adj[i];
+        for (Aresta* aresta : no->arestas) {
+            int j = distance(vertices.begin(), find(vertices.begin(), vertices.end(), aresta->id_no_alvo));
+            if(in_ponderado_aresta == true)
+                peso = aresta->peso;
+            else
+                peso = 1;
+            dist[i][j] = peso;
+            if (!in_direcionado) {
+                dist[j][i] = peso;
+            }
+        }
+    }
+
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] < INF && dist[k][j] < INF) {
+                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (dist[i][j] == INF) {
+                dist[i][j] = 0;
+            }
+        }
+    }
+
+    return dist;
+}
+
+vector<int> Grafo::excentricidade(){
+    vector<vector<int>> dist = calcular_matriz_distancias();
+    vector<int> excentricidades(this->ordem,0);
+    for(int i = 0; i < this->ordem; i++) {
+        for(int j = 0; j < this->ordem; j++) 
+        {
+            if(i != j)
+                if(dist[i][j] != 0) 
+                    if(dist[i][j] > excentricidades[i])
+                        excentricidades[i] = dist[i][j];
+        }
+    }
+    return excentricidades;
+}
+
 int Grafo::raio() {
-    cout<<"Metodo nao implementado"<<endl;
-    return 0;
+    vector<int> excentricidades = excentricidade();
+    int raio = 0;
+    for(int menor : excentricidades) {
+        if((raio == 0 && menor > 0) || (menor > 0 && menor < raio)) {
+            raio = menor;
+        }
+    }
+    return raio;
 }
 
 int Grafo::diametro() {
-    cout<<"Metodo nao implementado"<<endl;
-    return 0;
+    vector<int> excentricidades = excentricidade();
+    int diametro = 0;
+    for(int maior : excentricidades) {
+        if(maior != 0 && maior > diametro) {
+            diametro = maior;
+        }
+    }
+    return diametro;
 }
 
 vector<char> Grafo::centro() {
-    cout<<"Metodo nao implementado"<<endl;
-    return {};
+    vector<int> excentricidades = excentricidade();
+    vector<char> centros;
+    int Raio = raio();
+    for(int i = 0; i < this->ordem; i++) {
+        if(excentricidades[i] == Raio) {
+            centros.push_back(lista_adj[i]->id);
+        }
+    }
+    return centros;
 }
 
 vector<char> Grafo::periferia() {
+    vector<int> excentricidades = excentricidade();
+    vector<char> periferias;
+    int Diametro = diametro();
+    for(int i = 0; i < this->ordem; i++) {
+        if(excentricidades[i] == Diametro) {
+            periferias.push_back(lista_adj[i]->id);
+        }
+    }
+    return periferias;
+}
+
+vector<char> Grafo::vertices_de_articulacao() {
     cout<<"Metodo nao implementado"<<endl;
     return {};
 }

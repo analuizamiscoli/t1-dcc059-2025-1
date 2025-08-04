@@ -21,7 +21,8 @@ public:
     void carregarGrafo(string nome_arquivo);
     void imprimirGrafo();
     void salvarGrafo(string nome_arquivo);
-
+    
+    vector<char> vertices_de_articulacao();
     vector<char> fecho_transitivo_direto(char id_no); // a
     vector<char> fecho_transitivo_indireto(char id_no); // b
     vector<char> caminho_minimo_dijkstra(char id_no_a, char id_no_b); // c
@@ -29,6 +30,8 @@ public:
     Grafo* arvore_geradora_minima_prim(vector<char> ids_nos); // e
     Grafo* arvore_geradora_minima_kruskal(vector<char> ids_nos); // f
     Grafo* arvore_caminhamento_profundidade(char id_no); // g
+    vector<vector<int>> calcular_matriz_distancias(); // calcular matriz distancias
+    vector<int> excentricidade(); // calcular excentricidade
     int raio(); // h 1
     int diametro(); // h 2
     vector<char> centro(); // h 3
@@ -47,12 +50,13 @@ public:
     bool in_ponderado_aresta;
     bool in_ponderado_vertice;
     vector<No*> lista_adj;
+    No* getNo(char id);
     //vector<pair<char, char>> arestas_de_retorno;
     vector<pair<char, char>> arestas_da_arvore_dfs; // Arestas da árvore de DFS
 
     private:
-    No* getNo(char id);
     void dfs_fecho_direto(No* no_atual, map<char, bool>& visitados, vector<char>& fecho);
+    void dfs_fecho_indireto(No* no_atual, char id_destino, map<char, bool>& visitados, bool& encontrado);
     void dfs_arvore(No* u, 
                     map<char, int>& cores, 
                     vector<pair<char, char>>& arestas_arvore);
