@@ -7,11 +7,17 @@ void Gerenciador::imprimirResultadoDFS(Grafo *arvore)
 {
     cout << "========== ARVORE DE CAMINHAMENTO EM PROFUNDIDADE ==========" << endl;
     arvore->imprimirGrafo(); // imprime a estrutura principal da árvore usando a função genérica
+    arvore->imprimirGrafo(); // imprime a estrutura principal da árvore usando a função genérica
 
     cout << "========== ARESTAS DA ARVORE ==========" << endl;
     if (arvore->arestas_da_arvore_dfs.empty())
     {
         cout << "Nenhuma aresta encontrada." << endl;
+    }
+    else
+    {
+        for (const auto &aresta : arvore->arestas_da_arvore_dfs)
+        {
     }
     else
     {
@@ -268,10 +274,11 @@ void Gerenciador::comandos(Grafo *grafo)
         break;
     }
     }
-
-    comandos(grafo);
+    comandos(grafo); // Chamada recursiva para manter o menu ativo
 }
 
+char Gerenciador::get_id_entrada(Grafo *grafo)
+{
 char Gerenciador::get_id_entrada(Grafo *grafo)
 {
     char id;
@@ -327,10 +334,11 @@ vector<char> Gerenciador::get_conjunto_ids(Grafo *grafo, int tam)
             }
         }
     }
-
     return ids;
 }
 
+bool Gerenciador::pergunta_imprimir_arquivo(string nome_arquivo)
+{
 bool Gerenciador::pergunta_imprimir_arquivo(string nome_arquivo)
 {
     int resp;
@@ -358,6 +366,11 @@ bool Gerenciador::pergunta_imprimir_arquivo(string nome_arquivo)
         {
             cout << endl;
             return false;
+        }
+        else
+        {
+            cout << "Resposta invalida. Digite 1 ou 2." << endl;
+        }
         }
         else
         {
