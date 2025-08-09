@@ -230,7 +230,7 @@ void Gerenciador::comandos(Grafo *grafo)
     case 'i':
     {
         Gulosos* resolvedorCDS = new Gulosos(grafo);
-        vector<char> conjuntoDominante = resolvedorCDS->ExecutarGulosoPuro();
+        vector<char> conjuntoDominante = resolvedorCDS->ExecutarGulosoSimples();
         
         string titulo = "CONJUNTO DOMINANTE CONECTADO (GULOSO SIMPLES)";
         grafo->imprimirVetorVertices(conjuntoDominante, titulo);

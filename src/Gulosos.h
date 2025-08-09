@@ -15,26 +15,26 @@ public:
     // Destrutor da classe.
     ~Gulosos();
 
-    // --- ALGORITMO GULOSO SIMPLES ---
-    // Executa o algoritmo Guloso Simples (determinístico).
-    std::vector<char> ExecutarGulosoPuro();
+    // a) Algoritmo Guloso Simples (case 'i').
+    std::vector<char> ExecutarGulosoSimples();
 
-    // --- ALGORITMO GULOSO RANDOMIZADO ADAPTATIVO (GRA) ---
-    // Executa o algoritmo GRA completo por N iterações.
+    // b) Algoritmo Guloso Randomizado Adaptativo (case 'j')
     std::vector<char> ExecutarGraParaDominanteConectado(
         int numeroDeIteracoes, 
         float fatorDeAleatoriedadeInicial, 
         int sementeRandomica
     );
 
+     // c) Espaço para o Algoritmo Reativo (case 'k')
+
 private:
     Grafo* grafo; // Ponteiro para o grafo original
 
     // Constrói uma única solução candidata com a lógica do GRA.
-    std::vector<char> ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade);
+    vector<char> ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade);
 
     // Verifica se um subconjunto de nós é conexo.
-    bool VerificarConectividadeDoSubgrafo(const std::vector<char>& conjuntoDeNos);
+    bool VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos);
 };
 
 #endif //GULOSOS_H

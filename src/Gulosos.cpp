@@ -19,76 +19,96 @@ Gulosos::~Gulosos() {}
 // ===================================================================================
 // ALGORITMO 1: GULOSO SIMPLES (DETERMINÍSTICO)
 // ===================================================================================
-std::vector<char> Gulosos::ExecutarGulosoPuro() {
-    std::vector<No*> nosDoGrafo = this->grafo->lista_adj;
+vector<char> Gulosos::ExecutarGulosoSimples() {
+    vector<No*> nos = this->grafo->lista_adj;
+    if (nos.empty()) return {};
 
-    if (nosDoGrafo.empty()) {
-        return {}; // Retorna um vetor vazio se o grafo não tiver nós.
+    unordered_map<char, No*> mapa;
+    for (No* no : nos) {
+        mapa[no->id] = no;
     }
 
-    std::unordered_map<char, No*> mapaDeNos;
-    for (No* no : nosDoGrafo) {
-        mapaDeNos[no->id] = no;
-    }
+    unordered_set<char> dominados;
+    unordered_set<char> conjuntoD;
 
-    std::unordered_set<char> conjuntoDominante;
-    std::unordered_set<char> nosDominados;
-
-    // Etapa 1: Escolher o nó de maior grau como ponto de partida.
-    No* noInicial = nosDoGrafo[0];
-    for (size_t i = 1; i < nosDoGrafo.size(); ++i) {
-        if (nosDoGrafo[i]->arestas.size() > noInicial->arestas.size()) {
-            noInicial = nosDoGrafo[i];
+    // Etapa 1: Escolher o nó de maior grau inicial
+    No* inicial = nullptr;
+    int maxGrau = -1;
+    for (No* no : nos) {
+        if ((int)no->arestas.size() > maxGrau) {
+            maxGrau = no->arestas.size();
+            inicial = no;
         }
     }
 
-    conjuntoDominante.insert(noInicial->id);
-    nosDominados.insert(noInicial->id);
-    for (Aresta* aresta : noInicial->arestas) {
-        nosDominados.insert(aresta->id_no_alvo);
+    if (!inicial) return {};
+
+    conjuntoD.insert(inicial->id);
+    dominados.insert(inicial->id);
+    for (Aresta* a : inicial->arestas) {
+        dominados.insert(a->id_no_alvo);
     }
 
-    // Etapa 2: Expansão gulosa até a solução ser completa.
-    while (nosDominados.size() < nosDoGrafo.size()) {
-        char melhorNoCandidato = 0;
+    // Etapa 2: Expansão gulosa
+    while (dominados.size() < (size_t)this->grafo->ordem) {
+        char melhorNo = 0;
         int maxNovosDominados = -1;
 
-        std::unordered_set<char> fronteira;
-        for (char idNoDaSolucao : conjuntoDominante) {
-            for (Aresta* aresta : mapaDeNos[idNoDaSolucao]->arestas) {
-                char idVizinho = aresta->id_no_alvo;
-                if (conjuntoDominante.find(idVizinho) == conjuntoDominante.end()) {
-                    fronteira.insert(idVizinho);
+        // Encontra a fronteira (vizinhos de D não em D)
+        unordered_set<char> fronteira;
+        for (char idD : conjuntoD) {
+            No* noAtual = mapa[idD];
+            if (!noAtual) continue;
+            for (Aresta* a : noAtual->arestas) {
+                if (conjuntoD.count(a->id_no_alvo) == 0) {
+                    fronteira.insert(a->id_no_alvo);
                 }
             }
         }
 
-        for (char idCandidato : fronteira) {
-            int novosDominados = 0;
-            if (nosDominados.find(idCandidato) == nosDominados.end()) {
-                novosDominados++;
+        if (fronteira.empty()) {
+             bool encontrado = false;
+             for(No* no : nos){
+                 if(dominados.find(no->id) == dominados.end()){
+                     fronteira.insert(no->id);
+                     encontrado = true;
+                     break;
+                 }
+             }
+             if(!encontrado) break;
+        }
+
+        for (char candidato : fronteira) {
+            int novos = 0;
+            if (dominados.count(candidato) == 0) novos++;
+            
+            No* noCandidato = mapa[candidato];
+            if (!noCandidato) continue;
+
+            for (Aresta* a : noCandidato->arestas) {
+                if (dominados.count(a->id_no_alvo) == 0) novos++;
             }
-            for (Aresta* aresta : mapaDeNos[idCandidato]->arestas) {
-                if (nosDominados.find(aresta->id_no_alvo) == nosDominados.end()) {
-                    novosDominados++;
-                }
-            }
-            if (novosDominados > maxNovosDominados) {
-                melhorNoCandidato = idCandidato;
-                maxNovosDominados = novosDominados;
+
+            if (novos > maxNovosDominados) {
+                melhorNo = candidato;
+                maxNovosDominados = novos;
             }
         }
 
-        if (melhorNoCandidato == 0) break;
+        if (melhorNo == 0) break;
 
-        conjuntoDominante.insert(melhorNoCandidato);
-        nosDominados.insert(melhorNoCandidato);
-        for (Aresta* aresta : mapaDeNos[melhorNoCandidato]->arestas) {
-            nosDominados.insert(aresta->id_no_alvo);
+        conjuntoD.insert(melhorNo);
+        dominados.insert(melhorNo);
+        
+        No* noAdicionado = mapa[melhorNo];
+        if (!noAdicionado) continue;
+
+        for (Aresta* a : noAdicionado->arestas) {
+            dominados.insert(a->id_no_alvo);
         }
     }
-    
-    return std::vector<char>(conjuntoDominante.begin(), conjuntoDominante.end());
+
+    return vector<char>(conjuntoD.begin(), conjuntoD.end());
 }
 
 
