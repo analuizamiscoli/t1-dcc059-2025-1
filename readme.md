@@ -1,7 +1,7 @@
 # DCC059 - Teoria dos Grafos - Turma A
 ## Trabalho Prático 1
 
-### Membros do Grupo
+### Membros do Grupo 18
 - **Alexya Vitória de Jesus Silva** - 202265002AB - alexya.jesus@estudante.ufjf.br
 - **Ana Luiza Almeida Míscoli** - 202265007AB - analuiza.miscoli@estudante.ufjf.br
 - **Felipe Vasconcellos Strehle** - 202235028 - felipe.strehle@estudante.ufjf.br
@@ -44,7 +44,8 @@ Este projeto, desenvolvido para a disciplina de Teoria dos Grafos (DCC059), impl
 Para compilar o projeto, utilize o seguinte comando na pasta raiz:
 
 ```bash
-g++ src/*.cpp -o execGrupo18
+cd src
+g++ *.cpp -o execGrupo18
 ```
 
 ### Execução

@@ -38,7 +38,7 @@ void Gerenciador::comandos(Grafo *grafo)
     cout << "(f) Arvore Geradora Minima (Algoritmo de Kruskal);" << endl;
     cout << "(g) Arvore de caminhamento em profundidade;" << endl;
     cout << "(h) Raio, diametro, centro e periferia do grafo;" << endl;
-    cout << "(i) Algoritmo guloso;" << endl;
+    cout << "(i) Algoritmo guloso simples;" << endl;
     cout << "(j) Algoritmo guloso randomizado adaptativo;" << endl;
     cout << "(k) Algoritmo guloso randomizado adaptativo reativo;" << endl;
     cout << "(0) Sair;" << endl

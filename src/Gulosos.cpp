@@ -95,12 +95,14 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
         int melhorPontuacao = -1;
 
         // Identifica como candidatos todos os vizinhos da solução atual que ainda não estão nela.
+        set<char> nosNaSolucao(conjuntoDominanteAtual.begin(), conjuntoDominanteAtual.end()); // Cria um set para busca rápida
         set<char> vizinhosCandidatos;
         for(char idNoDaSolucao : conjuntoDominanteAtual){
             No* ponteiroNoDaSolucao = grafo->getNo(idNoDaSolucao);
             if (!ponteiroNoDaSolucao) continue;
             for(Aresta* aresta : ponteiroNoDaSolucao->arestas){
-                if(find(conjuntoDominanteAtual.begin(), conjuntoDominanteAtual.end(), aresta->id_no_alvo) == conjuntoDominanteAtual.end()){
+                // A linha abaixo usa count() em um set, o que é muito rápido (busca O(log N) ou O(1)).
+                if(nosNaSolucao.count(aresta->id_no_alvo) == 0){
                     vizinhosCandidatos.insert(aresta->id_no_alvo);
                 }
             }
@@ -164,11 +166,6 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
             // Encerra se não houver mais candidatos possíveis.
             break;
         }
-    }
-    
-    // Verificação final de conectividade.
-    while(!VerificarConectividadeDoSubgrafo(conjuntoDominanteAtual)){
-        break; 
     }
 
     return conjuntoDominanteAtual;
