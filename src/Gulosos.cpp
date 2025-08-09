@@ -16,39 +16,107 @@ Gulosos::Gulosos(Grafo* grafo) {
 // Destrutor da classe.
 Gulosos::~Gulosos() {}
 
+// ===================================================================================
+// ALGORITMO 1: GULOSO SIMPLES (DETERMINÍSTICO)
+// ===================================================================================
+std::vector<char> Gulosos::ExecutarGulosoPuro() {
+    std::vector<No*> nosDoGrafo = this->grafo->lista_adj;
+
+    if (nosDoGrafo.empty()) {
+        return {}; // Retorna um vetor vazio se o grafo não tiver nós.
+    }
+
+    std::unordered_map<char, No*> mapaDeNos;
+    for (No* no : nosDoGrafo) {
+        mapaDeNos[no->id] = no;
+    }
+
+    std::unordered_set<char> conjuntoDominante;
+    std::unordered_set<char> nosDominados;
+
+    // Etapa 1: Escolher o nó de maior grau como ponto de partida.
+    No* noInicial = nosDoGrafo[0];
+    for (size_t i = 1; i < nosDoGrafo.size(); ++i) {
+        if (nosDoGrafo[i]->arestas.size() > noInicial->arestas.size()) {
+            noInicial = nosDoGrafo[i];
+        }
+    }
+
+    conjuntoDominante.insert(noInicial->id);
+    nosDominados.insert(noInicial->id);
+    for (Aresta* aresta : noInicial->arestas) {
+        nosDominados.insert(aresta->id_no_alvo);
+    }
+
+    // Etapa 2: Expansão gulosa até a solução ser completa.
+    while (nosDominados.size() < nosDoGrafo.size()) {
+        char melhorNoCandidato = 0;
+        int maxNovosDominados = -1;
+
+        std::unordered_set<char> fronteira;
+        for (char idNoDaSolucao : conjuntoDominante) {
+            for (Aresta* aresta : mapaDeNos[idNoDaSolucao]->arestas) {
+                char idVizinho = aresta->id_no_alvo;
+                if (conjuntoDominante.find(idVizinho) == conjuntoDominante.end()) {
+                    fronteira.insert(idVizinho);
+                }
+            }
+        }
+
+        for (char idCandidato : fronteira) {
+            int novosDominados = 0;
+            if (nosDominados.find(idCandidato) == nosDominados.end()) {
+                novosDominados++;
+            }
+            for (Aresta* aresta : mapaDeNos[idCandidato]->arestas) {
+                if (nosDominados.find(aresta->id_no_alvo) == nosDominados.end()) {
+                    novosDominados++;
+                }
+            }
+            if (novosDominados > maxNovosDominados) {
+                melhorNoCandidato = idCandidato;
+                maxNovosDominados = novosDominados;
+            }
+        }
+
+        if (melhorNoCandidato == 0) break;
+
+        conjuntoDominante.insert(melhorNoCandidato);
+        nosDominados.insert(melhorNoCandidato);
+        for (Aresta* aresta : mapaDeNos[melhorNoCandidato]->arestas) {
+            nosDominados.insert(aresta->id_no_alvo);
+        }
+    }
+    
+    return std::vector<char>(conjuntoDominante.begin(), conjuntoDominante.end());
+}
+
+
+// ===================================================================================
+// ALGORITMO 2: GULOSO RANDOMIZADO ADAPTATIVO (GRA)
+// ===================================================================================
+
 // Verifica se um subconjunto de nós é conexo.
 bool Gulosos::VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos) {
     if (conjuntoDeNos.empty() || conjuntoDeNos.size() == 1) {
         return true;
     }
-
-    // Usa um 'set' para buscas rápidas de 'pertence ao conjunto'.
     set<char> verticesDoConjunto(conjuntoDeNos.begin(), conjuntoDeNos.end());
     map<char, bool> mapaDeVisitados;
     vector<char> pilhaParaBusca;
-    
-    // Inicializa o mapa de visitação para o DFS.
     for(char idNo : conjuntoDeNos) {
         mapaDeVisitados[idNo] = false;
     }
-
-    // Começa a busca em profundidade a partir do primeiro nó do conjunto.
     pilhaParaBusca.push_back(conjuntoDeNos[0]);
     mapaDeVisitados[conjuntoDeNos[0]] = true;
     int contadorDeVisitados = 1;
-
-    // Loop principal da busca em profundidade (DFS).
     while(!pilhaParaBusca.empty()){
         char idNoAtual = pilhaParaBusca.back();
         pilhaParaBusca.pop_back();
-
         No* ponteiroNoAtual = grafo->getNo(idNoAtual);
         if(!ponteiroNoAtual) continue;
-
         for(Aresta* aresta : ponteiroNoAtual->arestas){
             char idNoVizinho = aresta->id_no_alvo;
-            
-            // A condição de avanço do DFS: o vizinho deve estar no conjunto e não pode ter sido visitado ainda.
             if(verticesDoConjunto.count(idNoVizinho) && !mapaDeVisitados[idNoVizinho]){
                 mapaDeVisitados[idNoVizinho] = true;
                 pilhaParaBusca.push_back(idNoVizinho);
@@ -56,8 +124,6 @@ bool Gulosos::VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos
             }
         }
     }
-    
-    // Se o número de nós visitados for igual ao tamanho do conjunto, ele é conexo.
     return contadorDeVisitados == conjuntoDeNos.size();
 }
 
@@ -65,11 +131,7 @@ bool Gulosos::VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos
 vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
     vector<char> conjuntoDominanteAtual;
     set<char> verticesDominados;
-
-    // Caso de um grafo vazio.
     if (grafo->ordem == 0) return conjuntoDominanteAtual;
-    
-    // Escolhe o nó com maior grau como ponto de partida guloso.
     No* noInicial = nullptr;
     if (!grafo->lista_adj.empty()){
         noInicial = grafo->lista_adj[0];
@@ -79,36 +141,26 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
             }
         }
     }
-    
     if(noInicial == nullptr) return conjuntoDominanteAtual;
-
-    // Adiciona o nó inicial e seus vizinhos ao conjunto de dominados.
     conjuntoDominanteAtual.push_back(noInicial->id);
     verticesDominados.insert(noInicial->id);
     for(Aresta* aresta : noInicial->arestas) {
         verticesDominados.insert(aresta->id_no_alvo);
     }
-
-    // Loop principal de construção: continua até todos os nós do grafo serem dominados.
     while (verticesDominados.size() < grafo->ordem) {
         vector<pair<char, int>> candidatosComPontuacao;
         int melhorPontuacao = -1;
-
-        // Identifica como candidatos todos os vizinhos da solução atual que ainda não estão nela.
-        set<char> nosNaSolucao(conjuntoDominanteAtual.begin(), conjuntoDominanteAtual.end()); // Cria um set para busca rápida
+        set<char> nosNaSolucao(conjuntoDominanteAtual.begin(), conjuntoDominanteAtual.end());
         set<char> vizinhosCandidatos;
         for(char idNoDaSolucao : conjuntoDominanteAtual){
             No* ponteiroNoDaSolucao = grafo->getNo(idNoDaSolucao);
             if (!ponteiroNoDaSolucao) continue;
             for(Aresta* aresta : ponteiroNoDaSolucao->arestas){
-                // A linha abaixo usa count() em um set, o que é muito rápido (busca O(log N) ou O(1)).
                 if(nosNaSolucao.count(aresta->id_no_alvo) == 0){
                     vizinhosCandidatos.insert(aresta->id_no_alvo);
                 }
             }
         }
-
-        // Medida de segurança para grafos desconexos.
         if(vizinhosCandidatos.empty() && verticesDominados.size() < grafo->ordem){
             for(No* noAtual : grafo->lista_adj){
                 if(verticesDominados.find(noAtual->id) == verticesDominados.end()){
@@ -117,12 +169,9 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
                 }
             }
         }
-
-        // Calcula a "pontuação" de cada candidato (quantos *novos* nós ele domina).
         for (char idCandidato : vizinhosCandidatos) {
             No* ponteiroNoCandidato = grafo->getNo(idCandidato);
             if(!ponteiroNoCandidato) continue;
-
             int pontuacaoDoCandidato = 0;
             if (verticesDominados.find(ponteiroNoCandidato->id) == verticesDominados.end()) {
                 pontuacaoDoCandidato++;
@@ -133,28 +182,20 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
                 }
             }
             candidatosComPontuacao.push_back({idCandidato, pontuacaoDoCandidato});
-            
             if (pontuacaoDoCandidato > melhorPontuacao) {
                 melhorPontuacao = pontuacaoDoCandidato;
             }
         }
-
-        // Monta a Lista de Candidatos Restrita (RCL) com os "melhores" candidatos.
         vector<char> listaDeBonsCandidatos_RCL;
-        // O limite da pontuação é definido pelo alfa (fator de aleatoriedade).
         float limiteDaPontuacao = melhorPontuacao * (1.0 - fatorDeAleatoriedade);
         for (const auto& candidato : candidatosComPontuacao) {
             if (candidato.second >= limiteDaPontuacao) {
                 listaDeBonsCandidatos_RCL.push_back(candidato.first);
             }
         }
-        
-        // Se a RCL não estiver vazia, sorteia um candidato dela.
         if (!listaDeBonsCandidatos_RCL.empty()) {
             int indiceAleatorio = rand() % listaDeBonsCandidatos_RCL.size();
             char candidatoEscolhido = listaDeBonsCandidatos_RCL[indiceAleatorio];
-            
-            // Adiciona o candidato escolhido à solução e atualiza os nós dominados.
             conjuntoDominanteAtual.push_back(candidatoEscolhido);
             verticesDominados.insert(candidatoEscolhido);
             No* noEscolhido = grafo->getNo(candidatoEscolhido);
@@ -163,44 +204,32 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
                 verticesDominados.insert(aresta->id_no_alvo);
             }
         } else {
-            // Encerra se não houver mais candidatos possíveis.
             break;
         }
     }
-
     return conjuntoDominanteAtual;
 }
 
 // Executa o algoritmo GRA completo por N iterações.
 vector<char> Gulosos::ExecutarGraParaDominanteConectado(int numeroDeIteracoes, float fatorDeAleatoriedadeInicial, int sementeRandomica) {
     srand(sementeRandomica);
-
     vector<char> melhorSolucaoEncontrada;
     float fatorDeAleatoriedadeAtual = fatorDeAleatoriedadeInicial; 
     int contadorDeIteracoesSemMelhora = 0;
-
-    // Loop principal do GRA, que constrói uma solução a cada iteração.
     for (int i = 0; i < numeroDeIteracoes; ++i) {
         vector<char> solucaoGeradaNestaIteracao = ConstruirSolucaoUnicaComGRA(fatorDeAleatoriedadeAtual);
-
-        // Se a nova solução for a melhor encontrada até agora, ela é salva.
         if (melhorSolucaoEncontrada.empty() || solucaoGeradaNestaIteracao.size() < melhorSolucaoEncontrada.size()) {
             melhorSolucaoEncontrada = solucaoGeradaNestaIteracao;
             cout << "Iteracao " << i << ": Nova melhor solucao encontrada com tamanho " << melhorSolucaoEncontrada.size() << endl;
-            
-            // Lógica adaptativa: fica mais "guloso" após encontrar uma solução melhor.
             contadorDeIteracoesSemMelhora = 0;
             fatorDeAleatoriedadeAtual = max(0.1f, fatorDeAleatoriedadeAtual - 0.1f);
         } else {
             contadorDeIteracoesSemMelhora++;
         }
-
-        // Lógica adaptativa: fica mais "aleatório" se não houver melhora por um tempo.
         if (contadorDeIteracoesSemMelhora > (numeroDeIteracoes * 0.1)) { 
             fatorDeAleatoriedadeAtual = min(1.0f, fatorDeAleatoriedadeAtual + 0.1f);
             contadorDeIteracoesSemMelhora = 0;
         }
     }
-
     return melhorSolucaoEncontrada;
 }

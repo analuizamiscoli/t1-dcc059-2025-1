@@ -227,6 +227,22 @@ void Gerenciador::comandos(Grafo *grafo)
         break;
     }
 
+    case 'i':
+    {
+        Gulosos* resolvedorCDS = new Gulosos(grafo);
+        vector<char> conjuntoDominante = resolvedorCDS->ExecutarGulosoPuro();
+        
+        string titulo = "CONJUNTO DOMINANTE CONECTADO (GULOSO SIMPLES)";
+        grafo->imprimirVetorVertices(conjuntoDominante, titulo);
+
+        if (pergunta_imprimir_arquivo("cds_guloso_simples.txt")) {
+            grafo->salvarVetorVertices(conjuntoDominante, "cds_guloso_simples.txt", titulo);
+        }
+
+        delete resolvedorCDS;
+        break;
+    }
+
     case 'j':
     {
         int numeroDeIteracoes, sementeDeRandomizacao;
