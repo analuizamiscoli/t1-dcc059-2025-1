@@ -33,9 +33,10 @@ O trabalho mantém todas as funcionalidades originais do TAD e adiciona uma nova
 **h)** **Propriedades do Grafo** - Raio, diâmetro, centro e periferia
 
 **Novas Funcionalidades do Trabalho 2:**
-**i) **Algoritmo Guloso** para o Conjunto Dominante Conexo  
-**j) **Algoritmo Guloso Randomizado Adaptativo (GRASP)** para o Conjunto Dominante Conexo  
-**k) **Algoritmo Guloso Randomizado Adaptativo Reativo** para o Conjunto Dominante Conexo  
+
+**i)** **Algoritmo Guloso** para o Conjunto Dominante Conexo  
+**j)** **Algoritmo Guloso Randomizado Adaptativo (GRASP)** para o Conjunto Dominante Conexo  
+**k)** **Algoritmo Guloso Randomizado Adaptativo Reativo** para o Conjunto Dominante Conexo  
 
 ---
 
@@ -100,18 +101,18 @@ a e 2
 
 O programa apresenta um menu interativo com as seguintes opções:
 
-(a) Fecho Transitivo Direto
-(b) Fecho Transitivo Indireto
-(c) Caminho Mínimo (Dijkstra)
-(d) Caminho Mínimo (Floyd)
-(e) Árvore Geradora Mínima (Prim)
-(f) Árvore Geradora Mínima (Kruskal)
-(g) Busca em Profundidade
-(h) Propriedades do Grafo
-(i) Algoritmo Guloso
-(j) Algoritmo Guloso Randomizado Adaptativo (GRASP)
-(k) Algoritmo Guloso Randomizado Adaptativo Reativo
-(0) Sair
+- **(a)** Fecho Transitivo Direto
+- **(b)** Fecho Transitivo Indireto
+- **(c)** Caminho Mínimo (Dijkstra)
+- **(d)** Caminho Mínimo (Floyd)
+- **(e)** Árvore Geradora Mínima (Prim)
+- **(f)** Árvore Geradora Mínima (Kruskal)
+- **(g)** Busca em Profundidade
+- **(h)** Propriedades do Grafo
+- **(i)** Algoritmo Guloso
+- **(j)** Algoritmo Guloso Randomizado Adaptativo
+- **(k)** Algoritmo Guloso Randomizado Adaptativo Reativo
+- **(0)** Sair
 
 
 Após cada execução, o programa pergunta se deseja salvar a saída em arquivo.
