@@ -1,5 +1,5 @@
 # DCC059 - Teoria dos Grafos - Turma A
-## Trabalho Prático 1
+## Trabalho Prático 2
 
 ### Membros do Grupo 18
 - **Alexya Vitória de Jesus Silva** - 202265002AB - alexya.jesus@estudante.ufjf.br
@@ -12,7 +12,9 @@
 
 ## 📋 Descrição do Projeto
 
-Este projeto, desenvolvido para a disciplina de Teoria dos Grafos (DCC059), implementa um **Tipo Abstrato de Dados (TAD)** para representação e manipulação de grafos simples em C++.
+Este projeto, desenvolvido para a disciplina de Teoria dos Grafos (DCC059), estende o **Tipo Abstrato de Dados (TAD)** de grafos do primeiro trabalho para incluir algoritmos construtivos focados na resolução do **Problema do Conjunto Dominante Conexo**.
+
+O trabalho mantém todas as funcionalidades originais do TAD e adiciona uma nova classe com implementações de heurísticas gulosas para encontrar soluções para este problema de otimização.
 
 ### 🎯 Características do Grafo
 - **Orientação**: Orientados ou não orientados
@@ -29,6 +31,11 @@ Este projeto, desenvolvido para a disciplina de Teoria dos Grafos (DCC059), impl
 **f)** **Árvore Geradora Mínima (Kruskal)** - Parâmetro: subconjunto X de vértices  
 **g)** **Busca em Profundidade** - Parâmetro: ID de vértice  
 **h)** **Propriedades do Grafo** - Raio, diâmetro, centro e periferia
+
+**Novas Funcionalidades do Trabalho 2:**
+**i) **Algoritmo Guloso** para o Conjunto Dominante Conexo  
+**j) **Algoritmo Guloso Randomizado Adaptativo (GRASP)** para o Conjunto Dominante Conexo  
+**k) **Algoritmo Guloso Randomizado Adaptativo Reativo** para o Conjunto Dominante Conexo  
 
 ---
 
@@ -93,15 +100,19 @@ a e 2
 
 O programa apresenta um menu interativo com as seguintes opções:
 
-1. Fecho Transitivo Direto
-2. Fecho Transitivo Indireto
-3. Caminho Mínimo (Dijkstra)
-4. Caminho Mínimo (Floyd)
-5. Árvore Geradora Mínima (Prim)
-6. Árvore Geradora Mínima (Kruskal)
-7. Busca em Profundidade
-8. Propriedades do Grafo (Raio, Diâmetro, Centro, Periferia)
-9. Sair
+(a) Fecho Transitivo Direto
+(b) Fecho Transitivo Indireto
+(c) Caminho Mínimo (Dijkstra)
+(d) Caminho Mínimo (Floyd)
+(e) Árvore Geradora Mínima (Prim)
+(f) Árvore Geradora Mínima (Kruskal)
+(g) Busca em Profundidade
+(h) Propriedades do Grafo
+(i) Algoritmo Guloso
+(j) Algoritmo Guloso Randomizado Adaptativo (GRASP)
+(k) Algoritmo Guloso Randomizado Adaptativo Reativo
+(0) Sair
+
 
 Após cada execução, o programa pergunta se deseja salvar a saída em arquivo.
 
@@ -119,4 +130,4 @@ Para dúvidas, entre em contato com qualquer um dos membros do grupo através do
 - **Professor**: Luciana Brugiolo
 - **Tutor**: Rafael Freesz
 - **Semestre**: 2025/1
-- **Data de Entrega**: 07/07/2025
+- **Data de Entrega**: 11/08/2025
