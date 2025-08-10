@@ -19,9 +19,9 @@ public:
     std::vector<char> ExecutarGulosoSimples();
 
     // b) Algoritmo Guloso Randomizado Adaptativo (case 'j')
-    std::vector<char> ExecutarGraParaDominanteConectado(
+    std::vector<char> ExecutarGraspPadrao(
         int numeroDeIteracoes, 
-        float fatorDeAleatoriedadeInicial, 
+        float fatorDeAleatoriedadeFixo, 
         int sementeRandomica
     );
 

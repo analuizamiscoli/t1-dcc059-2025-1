@@ -246,20 +246,20 @@ void Gerenciador::comandos(Grafo *grafo)
     case 'j':
     {
         int numeroDeIteracoes, sementeDeRandomizacao;
-        float fatorDeAleatoriedade;
+        float fatorDeAleatoriedadeFixo;
         
         cout << "Digite o numero de iteracoes: ";
         cin >> numeroDeIteracoes;
-        cout << "Digite o fator de aleatoriedade alfa inicial (ex: 0.3): ";
-        cin >> fatorDeAleatoriedade;
+        cout << "Digite o fator de aleatoriedade alfa fixo (ex: 0.3): ";
+        cin >> fatorDeAleatoriedadeFixo;
         cout << "Digite a semente de randomizacao (um numero inteiro): ";
         cin >> sementeDeRandomizacao;
 
         Gulosos* resolvedorCDS = new Gulosos(grafo);
         
-        vector<char> conjuntoDominanteConectado = resolvedorCDS->ExecutarGraParaDominanteConectado(
+       vector<char> conjuntoDominanteConectado = resolvedorCDS->ExecutarGraspPadrao(
             numeroDeIteracoes, 
-            fatorDeAleatoriedade, 
+            fatorDeAleatoriedadeFixo, 
             sementeDeRandomizacao
         );
         

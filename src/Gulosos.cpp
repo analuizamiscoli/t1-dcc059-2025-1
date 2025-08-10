@@ -230,25 +230,22 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
     return conjuntoDominanteAtual;
 }
 
-// Executa o algoritmo GRA completo por N iterações.
-vector<char> Gulosos::ExecutarGraParaDominanteConectado(int numeroDeIteracoes, float fatorDeAleatoriedadeInicial, int sementeRandomica) {
+//
+
+//
+
+
+vector<char> Gulosos::ExecutarGraspPadrao(int numeroDeIteracoes, float fatorDeAleatoriedadeFixo, int sementeRandomica) {
     srand(sementeRandomica);
     vector<char> melhorSolucaoEncontrada;
-    float fatorDeAleatoriedadeAtual = fatorDeAleatoriedadeInicial; 
-    int contadorDeIteracoesSemMelhora = 0;
+    
     for (int i = 0; i < numeroDeIteracoes; ++i) {
-        vector<char> solucaoGeradaNestaIteracao = ConstruirSolucaoUnicaComGRA(fatorDeAleatoriedadeAtual);
+        // O fator de aleatoriedade é sempre o mesmo, não muda.
+        vector<char> solucaoGeradaNestaIteracao = ConstruirSolucaoUnicaComGRA(fatorDeAleatoriedadeFixo);
+        
         if (melhorSolucaoEncontrada.empty() || solucaoGeradaNestaIteracao.size() < melhorSolucaoEncontrada.size()) {
             melhorSolucaoEncontrada = solucaoGeradaNestaIteracao;
             cout << "Iteracao " << i << ": Nova melhor solucao encontrada com tamanho " << melhorSolucaoEncontrada.size() << endl;
-            contadorDeIteracoesSemMelhora = 0;
-            fatorDeAleatoriedadeAtual = max(0.1f, fatorDeAleatoriedadeAtual - 0.1f);
-        } else {
-            contadorDeIteracoesSemMelhora++;
-        }
-        if (contadorDeIteracoesSemMelhora > (numeroDeIteracoes * 0.1)) { 
-            fatorDeAleatoriedadeAtual = min(1.0f, fatorDeAleatoriedadeAtual + 0.1f);
-            contadorDeIteracoesSemMelhora = 0;
         }
     }
     return melhorSolucaoEncontrada;
