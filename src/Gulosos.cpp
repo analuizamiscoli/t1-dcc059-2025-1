@@ -181,14 +181,14 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
                 }
             }
         }
-        if(vizinhosCandidatos.empty() && verticesDominados.size() < grafo->ordem){
-            for(No* noAtual : grafo->lista_adj){
-                if(verticesDominados.find(noAtual->id) == verticesDominados.end()){
-                    vizinhosCandidatos.insert(noAtual->id);
-                    break; 
-                }
-            }
-        }
+        if (vizinhosCandidatos.empty()) {
+          for (No* n : grafo->lista_adj) {
+              if (!verticesDominados.count(n->id)) {
+                  vizinhosCandidatos.insert(n->id);
+              }
+          }
+      }
+
         for (char idCandidato : vizinhosCandidatos) {
             No* ponteiroNoCandidato = grafo->getNo(idCandidato);
             if(!ponteiroNoCandidato) continue;
@@ -206,16 +206,33 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
                 melhorPontuacao = pontuacaoDoCandidato;
             }
         }
-        vector<char> listaDeBonsCandidatos_RCL;
-        float limiteDaPontuacao = melhorPontuacao * (1.0 - fatorDeAleatoriedade);
-        for (const auto& candidato : candidatosComPontuacao) {
-            if (candidato.second >= limiteDaPontuacao) {
-                listaDeBonsCandidatos_RCL.push_back(candidato.first);
-            }
-        }
-        if (!listaDeBonsCandidatos_RCL.empty()) {
-            int indiceAleatorio = rand() % listaDeBonsCandidatos_RCL.size();
-            char candidatoEscolhido = listaDeBonsCandidatos_RCL[indiceAleatorio];
+
+       if (melhorPontuacao < 0) break;
+
+      // Constrói a RCL com verificação proativa de conectividade
+      vector<char> rcl;
+      float limite = melhorPontuacao * (1.0f - fatorDeAleatoriedade);
+      for (const auto& c : candidatosComPontuacao) {
+          if (c.second >= limite) {
+              vector<char> copia = conjuntoDominanteAtual;
+              copia.push_back(c.first);
+              if (VerificarConectividadeDoSubgrafo(copia)) {
+                  rcl.push_back(c.first);
+              }
+          }
+      }
+
+      // Fallback: Se nenhum candidato que mantém a conectividade for bom o suficiente,
+      // relaxamos a condição e pegamos qualquer candidato bom
+      if (rcl.empty()) {
+          for (const auto& c : candidatosComPontuacao) {
+              if (c.second >= limite) rcl.push_back(c.first);
+          }
+      }
+
+        if (!rcl.empty()) {
+            int indiceAleatorio = rand() % rcl.size();
+            char candidatoEscolhido = rcl[indiceAleatorio];
             conjuntoDominanteAtual.push_back(candidatoEscolhido);
             verticesDominados.insert(candidatoEscolhido);
             No* noEscolhido = grafo->getNo(candidatoEscolhido);
@@ -230,23 +247,25 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
     return conjuntoDominanteAtual;
 }
 
-//
-
-//
-
-
 vector<char> Gulosos::ExecutarGraspPadrao(int numeroDeIteracoes, float fatorDeAleatoriedadeFixo, int sementeRandomica) {
     srand(sementeRandomica);
     vector<char> melhorSolucaoEncontrada;
     
     for (int i = 0; i < numeroDeIteracoes; ++i) {
         // O fator de aleatoriedade é sempre o mesmo, não muda.
-        vector<char> solucaoGeradaNestaIteracao = ConstruirSolucaoUnicaComGRA(fatorDeAleatoriedadeFixo);
-        
-        if (melhorSolucaoEncontrada.empty() || solucaoGeradaNestaIteracao.size() < melhorSolucaoEncontrada.size()) {
-            melhorSolucaoEncontrada = solucaoGeradaNestaIteracao;
-            cout << "Iteracao " << i << ": Nova melhor solucao encontrada com tamanho " << melhorSolucaoEncontrada.size() << endl;
+        vector<char> solucao = ConstruirSolucaoUnicaComGRA(fatorDeAleatoriedadeFixo);
+
+        if (!solucao.empty() && VerificarConectividadeDoSubgrafo(solucao)) {
+            if (melhorSolucaoEncontrada.empty() || solucao.size() < melhorSolucaoEncontrada.size()) {
+            melhorSolucaoEncontrada = solucao;
+            cout << "Iteracao " << i << ": Nova melhor solucao conexa encontrada com tamanho " << melhorSolucaoEncontrada.size() << endl;
+            }
         }
     }
+
+    if (melhorSolucaoEncontrada.empty()) {
+        cout << "AVISO: Nenhuma solução conexa foi encontrada!" << endl;
+    }
+
     return melhorSolucaoEncontrada;
 }

@@ -369,6 +369,7 @@ bool Gerenciador::pergunta_imprimir_arquivo(string nome_arquivo)
         if (resp == 1)
         {
             cout << endl;
+            return true;
         }
         else if (resp == 2)
         {
