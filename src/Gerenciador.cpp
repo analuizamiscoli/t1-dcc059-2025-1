@@ -2,6 +2,7 @@
 #include "Gulosos.h"
 #include <fstream>
 #include <limits>
+#include <chrono>
 
 void Gerenciador::imprimirResultadoDFS(Grafo *arvore)
 {
@@ -228,51 +229,76 @@ void Gerenciador::comandos(Grafo *grafo)
     }
 
     case 'i':
-    {
-        Gulosos* resolvedorCDS = new Gulosos(grafo);
-        vector<char> conjuntoDominante = resolvedorCDS->ExecutarGulosoSimples();
-        
-        string titulo = "CONJUNTO DOMINANTE CONECTADO (GULOSO SIMPLES)";
-        grafo->imprimirVetorVertices(conjuntoDominante, titulo);
+{
+    Gulosos* resolvedorCDS = new Gulosos(grafo);
+    
+    // --- INÍCIO DA MEDIÇÃO DE TEMPO ---
+    auto inicio = chrono::steady_clock::now();
 
-        if (pergunta_imprimir_arquivo("cds_guloso_simples.txt")) {
-            grafo->salvarVetorVertices(conjuntoDominante, "cds_guloso_simples.txt", titulo);
-        }
+    vector<char> conjuntoDominante = resolvedorCDS->ExecutarGulosoSimples();
+    
+    auto fim = chrono::steady_clock::now();
+    // --- FIM DA MEDIÇÃO DE TEMPO ---
 
-        delete resolvedorCDS;
-        break;
+    // --- CÁLCULO E IMPRESSÃO DO TEMPO ---
+    chrono::duration<double> duracao = fim - inicio;
+    cout << "-----------------------------------------" << endl;
+    cout << "Tempo de Execucao: " << duracao.count() << " segundos" << endl;
+    cout << "-----------------------------------------" << endl;
+
+    string titulo = "CONJUNTO DOMINANTE CONECTADO (GULOSO SIMPLES)";
+    grafo->imprimirVetorVertices(conjuntoDominante, titulo);
+
+    if (pergunta_imprimir_arquivo("cds_guloso_simples.txt")) {
+        grafo->salvarVetorVertices(conjuntoDominante, "cds_guloso_simples.txt", titulo);
     }
 
-    case 'j':
-    {
-        int numeroDeIteracoes, sementeDeRandomizacao;
-        float fatorDeAleatoriedadeFixo;
-        
-        cout << "Digite o numero de iteracoes: ";
-        cin >> numeroDeIteracoes;
-        cout << "Digite o fator de aleatoriedade alfa fixo (ex: 0.3): ";
-        cin >> fatorDeAleatoriedadeFixo;
-        cout << "Digite a semente de randomizacao (um numero inteiro): ";
-        cin >> sementeDeRandomizacao;
+    delete resolvedorCDS;
+    break;
+}
 
-        Gulosos* resolvedorCDS = new Gulosos(grafo);
-        
-       vector<char> conjuntoDominanteConectado = resolvedorCDS->ExecutarGraspPadrao(
-            numeroDeIteracoes, 
-            fatorDeAleatoriedadeFixo, 
-            sementeDeRandomizacao
-        );
-        
-        string titulo = "CONJUNTO DOMINANTE CONECTADO (GRA)";
-        grafo->imprimirVetorVertices(conjuntoDominanteConectado, titulo);
+case 'j':
+{
+    int numeroDeIteracoes, sementeDeRandomizacao;
+    float fatorDeAleatoriedadeFixo;
+    
+    cout << "Digite o numero de iteracoes: ";
+    cin >> numeroDeIteracoes;
+    cout << "Digite o fator de aleatoriedade alfa fixo (ex: 0.3): ";
+    cin >> fatorDeAleatoriedadeFixo;
+    cout << "Digite a semente de randomizacao (um numero inteiro): ";
+    cin >> sementeDeRandomizacao;
 
-        if (pergunta_imprimir_arquivo("cds_gra.txt")) {
-            grafo->salvarVetorVertices(conjuntoDominanteConectado, "cds_gra.txt", titulo);
-        }
+    Gulosos* resolvedorCDS = new Gulosos(grafo);
+    
+    // --- INÍCIO DA MEDIÇÃO DE TEMPO ---
+    auto inicio = chrono::steady_clock::now();
 
-        delete resolvedorCDS;
-        break;
+    vector<char> conjuntoDominanteConectado = resolvedorCDS->ExecutarGraspPadrao(
+        numeroDeIteracoes, 
+        fatorDeAleatoriedadeFixo, 
+        sementeDeRandomizacao
+    );
+    
+    auto fim = chrono::steady_clock::now();
+    // --- FIM DA MEDIÇÃO DE TEMPO ---
+
+    // --- CÁLCULO E IMPRESSÃO DO TEMPO ---
+    chrono::duration<double> duracao = fim - inicio;
+    cout << "-----------------------------------------" << endl;
+    cout << "Tempo de Execucao: " << duracao.count() << " segundos" << endl;
+    cout << "-----------------------------------------" << endl;
+    
+    string titulo = "CONJUNTO DOMINANTE CONECTADO (GRA)";
+    grafo->imprimirVetorVertices(conjuntoDominanteConectado, titulo);
+
+    if (pergunta_imprimir_arquivo("cds_gra.txt")) {
+        grafo->salvarVetorVertices(conjuntoDominanteConectado, "cds_gra.txt", titulo);
     }
+
+    delete resolvedorCDS;
+    break;
+}
 
     case '0':
     {
