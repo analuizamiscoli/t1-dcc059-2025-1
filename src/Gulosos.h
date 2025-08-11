@@ -7,6 +7,8 @@
 // Includes necessários para as implementações no .cpp
 #include <unordered_set>
 #include <unordered_map>
+#include <random>
+
 
 class Gulosos {
 public:
@@ -26,12 +28,21 @@ public:
     );
 
      // c) Espaço para o Algoritmo Reativo (case 'k')
+    /*std::vector<char> ConstruirSolucaoUnicaComGRAReativo(
+    float fatorDeAleatoriedadeInicial,
+    float limiteInferiorAleatoriedade,
+    unsigned int semente
+    ); */
+
+    std::vector<char> ExecutarGrarReativo(int numIteracoes, float limiteInferiorAleatoriedade, unsigned int semente);
 
 private:
     Grafo* grafo; // Ponteiro para o grafo original
 
     // Constrói uma única solução candidata com a lógica do GRA.
     vector<char> ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade);
+
+    std::vector<char> ConstruirSolucaoComAlfa(float alfa, std::mt19937& gen);
 
     // Verifica se um subconjunto de nós é conexo.
     bool VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos);

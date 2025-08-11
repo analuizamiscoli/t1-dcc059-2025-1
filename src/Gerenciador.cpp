@@ -273,6 +273,31 @@ void Gerenciador::comandos(Grafo *grafo)
         delete resolvedorCDS;
         break;
     }
+    case 'k':
+{
+    int numIter = 300;
+    float limiteInferiorAleatoriedade;
+    unsigned int semente;
+
+    cout << "Executando GRASP Reativo com " << numIter << " iteracoes e bloco de atualizacao a cada 30 iteracoes.\n";
+    cout << "Digite o limite inferior do fator de aleatoriedade (ex: 0.1): ";
+    cin >> limiteInferiorAleatoriedade;
+
+    cout << "Digite a semente de randomizacao (um numero inteiro): ";
+    cin >> semente;
+
+    Gulosos gulosos(grafo);
+    vector<char> solucao = gulosos.ExecutarGrarReativo(numIter, limiteInferiorAleatoriedade, semente);
+
+    grafo->imprimirVetorVertices(solucao, "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)");
+
+    if (pergunta_imprimir_arquivo("cds_grasp_reativo.txt")) {
+        grafo->salvarVetorVertices(solucao, "cds_grasp_reativo.txt", "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)");
+    }
+
+    break;
+}
+
 
     case '0':
     {
