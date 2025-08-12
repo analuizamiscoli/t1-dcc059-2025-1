@@ -27,13 +27,7 @@ public:
         int sementeRandomica
     );
 
-     // c) Espaço para o Algoritmo Reativo (case 'k')
-    /*std::vector<char> ConstruirSolucaoUnicaComGRAReativo(
-    float fatorDeAleatoriedadeInicial,
-    float limiteInferiorAleatoriedade,
-    unsigned int semente
-    ); */
-
+    // c) Algoritmo Guloso Randomizado Adaptativo Reativo (case 'k')
     std::vector<char> ExecutarGrarReativo(int numIteracoes, float limiteInferiorAleatoriedade, unsigned int semente);
 
 private:
