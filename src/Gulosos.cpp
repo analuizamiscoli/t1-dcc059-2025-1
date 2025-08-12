@@ -252,7 +252,7 @@ vector<char> Gulosos::ConstruirSolucaoUnicaComGRA(float fatorDeAleatoriedade) {
 // ALGORITMO GULOSO RANDOMIZADO ADAPTATIVO REATIVO
 // ===================================================================================
 std::vector<char> Gulosos::ExecutarGrarReativo(int numIteracoes, float limiteInferiorAleatoriedade, unsigned int semente) {
-    std::vector<float> alfas = {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f};
+    std::vector<float> alfas = {0.1f, 0.3f, 0.5f};
     std::vector<float> probabilidades(alfas.size(), 1.0f / alfas.size());
     std::vector<float> desempenho(alfas.size(), 0.0f);
 
@@ -298,7 +298,7 @@ std::vector<char> Gulosos::ExecutarGrarReativo(int numIteracoes, float limiteInf
                 for (float& p : probabilidades) p /= somaProb;
             }
 
-            /*Impressão reduzida com as infos mais relevantes
+            /*
             std::cout << "\n--- Resumo do bloco " << iteracao / bloco << " ---" << std::endl;
             std::cout << "Melhor alfa (indice): " << melhorIndiceAlfaGlobal << " (alfa = " << alfas[melhorIndiceAlfaGlobal] << ")" << std::endl;
             std::cout << "Melhor solucao encontrada na iteracao: " << iteracaoMelhorSolucaoGlobal << std::endl;
@@ -311,6 +311,7 @@ std::vector<char> Gulosos::ExecutarGrarReativo(int numIteracoes, float limiteInf
             std::fill(desempenho.begin(), desempenho.end(), 0.0f);
         }
     }
+    std::cout << "Melhor tamanho encontrado: " << melhorTamanho << std::endl;
     return melhorSolucao;
 }
 
@@ -319,13 +320,11 @@ std::vector<char> Gulosos::ConstruirSolucaoComAlfa(float alfa, std::mt19937& gen
     std::vector<char> conjuntoDominanteAtual;
     std::set<char> verticesDominados;
 
-    if (grafo->ordem == 0) return conjuntoDominanteAtual;
+    if (grafo->ordem == 0) 
+        return conjuntoDominanteAtual;
     
-    // IMPRESSÃO DA DECISÃO
-   // std::cout << "  [Construindo Solucao com alfa=" << alfa << "]" << std::endl;
-
-   
     int grauMax = 0;
+    
     for (No* noAtual : grafo->lista_adj) {
         if ((int)noAtual->arestas.size() > grauMax) {
             grauMax = (int)noAtual->arestas.size();
@@ -339,25 +338,17 @@ std::vector<char> Gulosos::ConstruirSolucaoComAlfa(float alfa, std::mt19937& gen
         }
     }
 
-
     if (candidatos.empty()) return {}; 
 
     std::uniform_int_distribution<> dist(0, candidatos.size() - 1);
     int escolhidoIdx = dist(gen);
     No* noInicial = candidatos[escolhidoIdx];
         
-    // IMPRESSÃO DA DECISÃO
-    //std::cout << "  > No inicial escolhido (maior grau): " << noInicial->id << std::endl;
-
     conjuntoDominanteAtual.push_back(noInicial->id);
     verticesDominados.insert(noInicial->id);
     for (Aresta* a : noInicial->arestas) {
         verticesDominados.insert(a->id_no_alvo);
     }
-    
-    // IMPRESSÃO DA DECISÃO
-   // std::cout << "  > Vertices dominados: " << verticesDominados.size() << "/" << grafo->ordem << std::endl;
-
 
     while ((int)verticesDominados.size() < grafo->ordem) {
         std::vector<std::pair<char, int>> candidatosComPontuacao;
@@ -404,43 +395,19 @@ std::vector<char> Gulosos::ConstruirSolucaoComAlfa(float alfa, std::mt19937& gen
         std::vector<char> rcl;
         float limite = melhorPontuacao * (1.0f - alfa);
         
-        // IMPRESSÃO DA DECISÃO
-      //  std::cout << "    - Melhor pontuacao de candidato: " << melhorPontuacao << std::endl;
-        //std::cout << "    - Limite para RCL (alfa=" << alfa << "): " << limite << std::endl;
-
         for (const auto& c : candidatosComPontuacao) {
             if (c.second >= limite) {
-                // Supondo que a função VerificarConectividadeDoSubgrafo exista
-                // std::vector<char> testeConjunto = conjuntoDominanteAtual;
-                // testeConjunto.push_back(c.first);
-                // if (VerificarConectividadeDoSubgrafo(testeConjunto)) {
+                if (candidatoConectaAoConjunto(c.first, conjuntoDominanteAtual)) {
                     rcl.push_back(c.first);
-                // }
+                }
             }
         }
-        
-        // Comentado pois a lógica original parece ter um fallback.
-        // if (rcl.empty()) {
-        //     for (const auto& c : candidatosComPontuacao) {
-        //         if (c.second >= limite) rcl.push_back(c.first);
-        //     }
-        // }
 
         if (rcl.empty()) break;
         
-        // IMPRESSÃO DA DECISÃO
-       // std::cout << "    - RCL (Lista de Candidatos Restrita): { ";
-      //  for(char id : rcl) std::cout << id << " ";
-        //std::cout << "}" << std::endl;
-
-
         std::uniform_int_distribution<> distRCL(0, rcl.size() - 1);
         char escolhido = rcl[distRCL(gen)];
         
-        // IMPRESSÃO DA DECISÃO
-       // std::cout << "    - No escolhido da RCL: " << escolhido << std::endl;
-
-
         conjuntoDominanteAtual.push_back(escolhido);
         verticesDominados.insert(escolhido);
         No* noEscolhido = grafo->getNo(escolhido);
@@ -449,10 +416,24 @@ std::vector<char> Gulosos::ConstruirSolucaoComAlfa(float alfa, std::mt19937& gen
                 verticesDominados.insert(a->id_no_alvo);
             }
         }
-        // IMPRESSÃO DA DECISÃO
-       // std::cout << "  > Vertices dominados: " << verticesDominados.size() << "/" << grafo->ordem << std::endl;
     }
     return conjuntoDominanteAtual;
+}
+
+
+bool Gulosos::candidatoConectaAoConjunto(char candidato, const vector<char>& conjuntoDominanteAtual) {
+    No* noCandidato = grafo->getNo(candidato);
+    if (!noCandidato) return false;
+    
+    unordered_set<char> conjuntoSet(conjuntoDominanteAtual.begin(), conjuntoDominanteAtual.end());
+    
+    // verifica se candidato conecta com algum nó do conjunto
+    for (Aresta* a : noCandidato->arestas) {
+        if (conjuntoSet.count(a->id_no_alvo)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 

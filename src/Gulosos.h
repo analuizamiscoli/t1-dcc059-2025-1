@@ -27,13 +27,7 @@ public:
         int sementeRandomica
     );
 
-     // c) Espaço para o Algoritmo Reativo (case 'k')
-    /*std::vector<char> ConstruirSolucaoUnicaComGRAReativo(
-    float fatorDeAleatoriedadeInicial,
-    float limiteInferiorAleatoriedade,
-    unsigned int semente
-    ); */
-
+    // c) Algoritmo Guloso Randomizado Adaptativo Reativo (case 'k')
     std::vector<char> ExecutarGrarReativo(int numIteracoes, float limiteInferiorAleatoriedade, unsigned int semente);
 
 private:
@@ -46,6 +40,9 @@ private:
 
     // Verifica se um subconjunto de nós é conexo.
     bool VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos);
+
+    // Função auxiliar para construir a RCL (Lista de Candidatos Restrita)
+    bool candidatoConectaAoConjunto(char candidato, const vector<char>& conjuntoDominanteAtual);
 };
 
 #endif //GULOSOS_H
