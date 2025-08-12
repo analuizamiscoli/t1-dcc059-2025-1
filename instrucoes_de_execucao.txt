@@ -1,0 +1,47 @@
+﻿======= INSTRUÇÕES DE EXECUÇÃO =======
+======= CONJUNTO DOMINANTE CONEXO - PROBLEMA A =======
+======= GRUPO 18 - TRABALHO PRÁTICO 2 - DCC059 =======
+
+Este documento descreve como compilar e executar o programa desenvolvido para o Trabalho Prático 2.
+
+1. PRÉ-REQUISITOS
+* Ambiente Linux.
+* Compilador g++ instalado.
+
+2. COMPILAÇÃO
+Para compilar o projeto, navegue até a pasta 'src' por meio de 'cd src' e execute o seguinte comando no terminal:
+g++ *.cpp -o execGrupo18
+Isso irá gerar um arquivo executável chamado "execGrupo18".
+
+3. EXECUÇÃO
+Formato do comando:
+./execGrupo18 <caminho_para_o_arquivo_de_entrada>
+Exemplo:
+./execGrupo18 instancias/g_25_0.16_0_1_0.txt
+
+O programa é executado via linha de comando, passando o caminho para o arquivo do grafo como argumento. Após a inicialização, um menu interativo será exibido para a escolha do algoritmo.
+
+4. SELEÇÃO DE ALGORITMOS E PARÂMETROS
+Após a execução do comando acima, o programa exibirá um menu. Siga as instruções abaixo para cada algoritmo.
+
+(a) Algoritmo Guloso Simples (Opção 'i')
+* Selecione a opção 'i' no menu.
+* O algoritmo será executado automaticamente.
+* Parâmetros: Não requer parâmetros adicionais.
+* Arquivo de Saída Padrão: 'cds_guloso_simples.txt' (se o usuário optar por salvar).
+
+(b) Algoritmo Guloso Randomizado Adaptativo (GRASP Padrão - Opção 'j')
+* Selecione a opção 'j' no menu.
+* O programa solicitará os seguintes parâmetros na sequência:
+   1. Número de iterações: Quantas vezes a construção da solução será repetida (ex: 30).
+   2. Fator de aleatoriedade alfa fixo: Um valor entre 0.0 e 1.0 (ex: 0.3).
+   3. Semente de randomização: Um número inteiro para inicializar o gerador aleatório (ex: 10).
+* Arquivo de Saída Padrão: 'cds_gra.txt' (se o usuário optar por salvar).
+
+(c) Algoritmo Guloso Randomizado Adaptativo Reativo (GRASP Reativo - Opção 'k')
+* Selecione a opção 'k' no menu.
+* O programa solicitará os seguintes parâmetros na sequência:
+   1. Limite inferior do fator de aleatoriedade: O menor valor de alfa a ser considerado (ex: 0.1).
+   2. Semente de randomização: Um número inteiro para inicializar o gerador aleatório (ex: 5).
+* Parâmetros fixos no código: O número de iterações (300) e o bloco de atualização (30) estão definidos internamente.
+* Arquivo de Saída Padrão: 'cds_grasp_reativo.txt' (se o usuário optar por salvar).
