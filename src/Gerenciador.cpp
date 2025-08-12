@@ -295,6 +295,11 @@ case 'j':
     if (pergunta_imprimir_arquivo("cds_gra.txt")) {
         grafo->salvarVetorVertices(conjuntoDominanteConectado, "cds_gra.txt", titulo);
     }
+
+    delete resolvedorCDS;
+    break;
+}
+
     case 'k':
 {
     int numIter = 300;
@@ -317,11 +322,6 @@ case 'j':
         grafo->salvarVetorVertices(solucao, "cds_grasp_reativo.txt", "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)");
     }
 
-    break;
-}
-
-
-    delete resolvedorCDS;
     break;
 }
 
