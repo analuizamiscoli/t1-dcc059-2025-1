@@ -295,13 +295,19 @@ case 'j':
     if (pergunta_imprimir_arquivo("cds_gra.txt")) {
         grafo->salvarVetorVertices(conjuntoDominanteConectado, "cds_gra.txt", titulo);
     }
-    case 'k':
+    
+    delete resolvedorCDS;
+    break;
+}
+
+   case 'k':
 {
     int numIter = 300;
     float limiteInferiorAleatoriedade;
     unsigned int semente;
 
-    cout << "Executando GRASP Reativo com " << numIter << " iteracoes e bloco de atualizacao a cada 30 iteracoes.\n";
+    cout << "Executando GRASP Reativo com " << numIter 
+         << " iteracoes e bloco de atualizacao a cada 30 iteracoes.\n";
     cout << "Digite o limite inferior do fator de aleatoriedade (ex: 0.1): ";
     cin >> limiteInferiorAleatoriedade;
 
@@ -309,19 +315,38 @@ case 'j':
     cin >> semente;
 
     Gulosos gulosos(grafo);
-    vector<char> solucao = gulosos.ExecutarGrarReativo(numIter, limiteInferiorAleatoriedade, semente);
 
-    grafo->imprimirVetorVertices(solucao, "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)");
+    // --- INÍCIO DA MEDIÇÃO DE TEMPO ---
+    auto inicio = chrono::steady_clock::now();
+
+    vector<char> solucao = gulosos.ExecutarGrarReativo(
+        numIter, 
+        limiteInferiorAleatoriedade, 
+        semente
+    );
+
+    auto fim = chrono::steady_clock::now();
+    // --- FIM DA MEDIÇÃO DE TEMPO ---
+
+    // --- CÁLCULO E IMPRESSÃO DO TEMPO ---
+    chrono::duration<double> duracao = fim - inicio;
+    cout << "-----------------------------------------" << endl;
+    cout << "Tempo de Execucao: " << duracao.count() << " segundos" << endl;
+    cout << "-----------------------------------------" << endl;
+
+    grafo->imprimirVetorVertices(
+        solucao, 
+        "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)"
+    );
 
     if (pergunta_imprimir_arquivo("cds_grasp_reativo.txt")) {
-        grafo->salvarVetorVertices(solucao, "cds_grasp_reativo.txt", "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)");
+        grafo->salvarVetorVertices(
+            solucao, 
+            "cds_grasp_reativo.txt", 
+            "CONJUNTO DOMINANTE CONECTADO (GRASP REATIVO)"
+        );
     }
 
-    break;
-}
-
-
-    delete resolvedorCDS;
     break;
 }
 

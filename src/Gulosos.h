@@ -46,6 +46,9 @@ private:
 
     // Verifica se um subconjunto de nós é conexo.
     bool VerificarConectividadeDoSubgrafo(const vector<char>& conjuntoDeNos);
+
+    // Função auxiliar para construir a RCL (Lista de Candidatos Restrita)
+    bool candidatoConectaAoConjunto(char candidato, const vector<char>& conjuntoDominanteAtual);
 };
 
 #endif //GULOSOS_H
